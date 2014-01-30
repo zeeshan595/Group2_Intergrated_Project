@@ -65,7 +65,7 @@ public class Car : MonoBehaviour
 
             if (wheels[x].turn)
             {
-                collider.steerAngle = Mathf.Lerp(slowSteeringAngle, steeringAngle, rigidbody.velocity.magnitude) * input.x;
+                collider.steerAngle = Mathf.Lerp(slowSteeringAngle, steeringAngle, rigidbody.velocity.magnitude / 4) * input.x;
             }
         }
     }
