@@ -42,7 +42,14 @@ public class Car : MonoBehaviour
 
     private void Update()
     {
-        Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+
+        if (Input.GetKeyDown(Settings.buttons[4].key))
+        {
+            transform.position = transform.position + new Vector3(0, 2, 0);
+            transform.rotation = Quaternion.identity;
+        }
+
+        Vector2 input = new Vector2(Settings.GetAxies(Settings.buttons[2].key, Settings.buttons[3].key), Settings.GetAxies(Settings.buttons[0].key, Settings.buttons[1].key));
 
         for (int x = 0; x < wheels.Length; x++)
         {
