@@ -1,0 +1,15 @@
+using UnityEngine;
+using System;
+
+[Serializable]
+public class Wheel
+{
+    public GameObject gameObject;
+    public bool turn;
+    public bool motor;
+    public float mass;
+    public float radius;
+    public float suspentionDistance;
+    public float suspentionSpring;
+    public float suspentionDamper;
+}

@@ -1,6 +1,8 @@
 Temp
+obj
 Library
 *.csproj
 *.pidb
 *.sln
+*.suo
 UNITY.userprefs
