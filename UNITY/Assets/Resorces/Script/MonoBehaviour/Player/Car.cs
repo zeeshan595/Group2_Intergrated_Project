@@ -57,6 +57,7 @@ public class Car : MonoBehaviour
             WheelCollider collider = wheels[x].gameObject.GetComponent<WheelCollider>();
 
             #region car motor
+
             if (wheels[x].motor)
             {
                 if (rigidbody.velocity.magnitude < topSpeed)
@@ -64,9 +65,11 @@ public class Car : MonoBehaviour
                 else
                     collider.motorTorque = 0;
             }
+
             #endregion
 
             #region turnning
+
             if (wheels[x].turn)
             {
                 if (turnning)
@@ -74,6 +77,7 @@ public class Car : MonoBehaviour
                 else
                     rigidbody.AddForceAtPosition(Vector3.up * 25 * input.x, transform.forward);
             }
+
             #endregion
 
             #region wheels mesh
@@ -87,6 +91,7 @@ public class Car : MonoBehaviour
             for (int c = 0; c < totalChildren; c++)
             {
                 wheels[x].gameObject.transform.GetChild(c).transform.position = meshPosition;
+                
             }
 
             #endregion
