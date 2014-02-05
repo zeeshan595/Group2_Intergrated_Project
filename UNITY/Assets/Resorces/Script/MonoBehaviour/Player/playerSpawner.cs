@@ -8,7 +8,7 @@ public class playerSpawner : MonoBehaviour
     public void Start()
     {
         if (Network.peerType == NetworkPeerType.Disconnected)
-            Application.LoadLevel("menu");
+            Instantiate(player, transform.position, transform.rotation);
         else
             Network.Instantiate(player, transform.position, transform.rotation, 0);
     }

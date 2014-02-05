@@ -11,6 +11,7 @@ public class Car : MonoBehaviour
     public float topSpeed = 7;
     public float steeringAngle = 30;
     public float slowSteeringAngle = 30;
+    public bool turnning = false;
 
     #endregion
 
@@ -65,7 +66,10 @@ public class Car : MonoBehaviour
 
             if (wheels[x].turn)
             {
-                collider.steerAngle = Mathf.Lerp(slowSteeringAngle, steeringAngle, rigidbody.velocity.magnitude / 4) * input.x;
+                if (turnning)
+                    collider.steerAngle = Mathf.Lerp(slowSteeringAngle, steeringAngle, rigidbody.velocity.magnitude / 4) * input.x;
+                else
+                    rigidbody.AddForceAtPosition(Vector3.up * 25 * input.x, transform.forward);
             }
         }
     }
