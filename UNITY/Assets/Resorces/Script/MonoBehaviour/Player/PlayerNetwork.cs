@@ -7,7 +7,11 @@ public class PlayerNetwork : MonoBehaviour
 
     private void Start()
     {
-        if (!networkView.isMine && Network.peerType != NetworkPeerType.Disconnected)
+        if (Network.peerType == NetworkPeerType.Disconnected)
+        {
+            Destroy(gameObject.GetComponent<NetworkView>());
+        }
+        else if (!networkView.isMine)
         {
             gameObject.GetComponent<Car>().enabled = false;
             Destroy(playerCamera);

@@ -12,4 +12,5 @@ public class Wheel
     public float suspentionDistance;
     public float suspentionSpring;
     public float suspentionDamper;
+    public float meshSuspentionDistance = 0.6f;
 }

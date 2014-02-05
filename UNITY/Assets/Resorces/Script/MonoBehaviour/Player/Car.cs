@@ -56,6 +56,7 @@ public class Car : MonoBehaviour
         {
             WheelCollider collider = wheels[x].gameObject.GetComponent<WheelCollider>();
 
+            #region car motor
             if (wheels[x].motor)
             {
                 if (rigidbody.velocity.magnitude < topSpeed)
@@ -63,7 +64,9 @@ public class Car : MonoBehaviour
                 else
                     collider.motorTorque = 0;
             }
+            #endregion
 
+            #region turnning
             if (wheels[x].turn)
             {
                 if (turnning)
@@ -71,6 +74,22 @@ public class Car : MonoBehaviour
                 else
                     rigidbody.AddForceAtPosition(Vector3.up * 25 * input.x, transform.forward);
             }
+            #endregion
+
+            #region wheels mesh
+
+            Vector3 meshPosition = wheels[x].gameObject.transform.position + (wheels[x].gameObject.transform.TransformDirection(-Vector3.up) * (wheels[x].meshSuspentionDistance - (wheels[x].radius / 2)));
+            RaycastHit hit;
+            if (Physics.Raycast(wheels[x].gameObject.transform.position, -transform.up, out hit, wheels[x].meshSuspentionDistance))
+                meshPosition = wheels[x].gameObject.transform.position + (wheels[x].gameObject.transform.TransformDirection(-Vector3.up) * (hit.distance - (wheels[x].radius / 2)));
+
+            int totalChildren = wheels[x].gameObject.transform.childCount;
+            for (int c = 0; c < totalChildren; c++)
+            {
+                wheels[x].gameObject.transform.GetChild(c).transform.position = meshPosition;
+            }
+
+            #endregion
         }
     }
 }
