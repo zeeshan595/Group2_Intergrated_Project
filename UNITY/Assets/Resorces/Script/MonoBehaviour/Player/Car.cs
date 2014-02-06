@@ -93,10 +93,10 @@ public class Car : MonoBehaviour
                 else if (input == Vector2.zero)
                     wheels[x].wheelSpin += rigidbody.velocity.x * Mathf.PI;
                 else
-                    wheels[x].wheelSpin += rigidbody.velocity.x * Mathf.PI * Mathf.PI;
+                    wheels[x].wheelSpin += rigidbody.velocity.x * Mathf.PI + (input.y * 2);
             }
             else if (wheels[x].motor)
-                wheels[x].wheelSpin += rigidbody.velocity.x * Mathf.PI * Mathf.PI;
+                wheels[x].wheelSpin += rigidbody.velocity.x * Mathf.PI + (input.y * 2);
 
             meshPosition += new Vector3(0, wheels[x].meshYOffset, 0);
 
