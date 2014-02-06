@@ -47,7 +47,7 @@ public class Car : MonoBehaviour
         if (Input.GetKeyDown(Settings.buttons[4].key))
         {
             transform.position = transform.position + new Vector3(0, 2, 0);
-            transform.rotation = Quaternion.identity;
+            transform.rotation = Quaternion.Euler(new Vector3(0, 90, 0));
         }
 
         Vector2 input = new Vector2(Settings.GetAxies(Settings.buttons[2].key, Settings.buttons[3].key), Settings.GetAxies(Settings.buttons[0].key, Settings.buttons[1].key));
@@ -85,13 +85,26 @@ public class Car : MonoBehaviour
             Vector3 meshPosition = wheels[x].gameObject.transform.position + (wheels[x].gameObject.transform.TransformDirection(-Vector3.up) * (wheels[x].meshSuspentionDistance - (wheels[x].radius / 2)));
             RaycastHit hit;
             if (Physics.Raycast(wheels[x].gameObject.transform.position, -transform.up, out hit, wheels[x].meshSuspentionDistance))
+            {
                 meshPosition = wheels[x].gameObject.transform.position + (wheels[x].gameObject.transform.TransformDirection(-Vector3.up) * (hit.distance - (wheels[x].radius / 2)));
+
+                if (!wheels[x].motor)
+                    wheels[x].wheelSpin += rigidbody.velocity.x * Mathf.PI;
+                else if (input == Vector2.zero)
+                    wheels[x].wheelSpin += rigidbody.velocity.x * Mathf.PI;
+                else
+                    wheels[x].wheelSpin += rigidbody.velocity.x * Mathf.PI * Mathf.PI;
+            }
+            else if (wheels[x].motor)
+                wheels[x].wheelSpin += rigidbody.velocity.x * Mathf.PI * Mathf.PI;
+
+            meshPosition += new Vector3(0, wheels[x].meshYOffset, 0);
 
             int totalChildren = wheels[x].gameObject.transform.childCount;
             for (int c = 0; c < totalChildren; c++)
             {
                 wheels[x].gameObject.transform.GetChild(c).transform.position = meshPosition;
-                
+                wheels[x].gameObject.transform.GetChild(c).transform.rotation = Quaternion.Euler(new Vector3(wheels[x].wheelSpin, 90, -90));
             }
 
             #endregion
