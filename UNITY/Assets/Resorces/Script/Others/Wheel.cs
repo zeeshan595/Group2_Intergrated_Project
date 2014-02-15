@@ -4,9 +4,24 @@ using System;
 [Serializable]
 public class Wheel
 {
+    public enum WheelType
+    {
+        Motor = 0,
+        Turning = 1,
+        Stationary = 2,
+        MotorAndTurn = 3
+    }
+
+    public enum WheelPosition
+    {
+        Left = 0,
+        Right = 1,
+        Middle = 2
+    }
+
     public GameObject gameObject;
-    public bool turn;
-    public bool motor;
+    public WheelType type;
+    public WheelPosition wheelPosition;
     public float mass;
     public float radius;
     public float suspentionDistance;
