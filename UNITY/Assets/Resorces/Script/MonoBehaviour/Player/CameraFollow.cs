@@ -3,6 +3,8 @@ using System.Collections;
 
 public class CameraFollow : MonoBehaviour
 {
+    #region Variables
+
     public GameObject target;
     // The distance in the x-z plane to the target
     public float distance = 10.0f;
@@ -11,6 +13,8 @@ public class CameraFollow : MonoBehaviour
     // How much we 
     public float heightDamping = 2.0f;
     public float rotationDamping = 3.0f;
+
+    #endregion
 
     private void Update()
     {

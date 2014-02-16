@@ -4,7 +4,7 @@ using System.Collections;
 public class Car : MonoBehaviour
 {
 
-    #region Variables;
+    #region Variables
 
     public Wheel[] wheels;
     public Vector3 centerOfMass = Vector3.zero;
@@ -66,9 +66,7 @@ public class Car : MonoBehaviour
             #region turnning
 
             if (wheels[x].type == Wheel.WheelType.Turning || wheels[x].type == Wheel.WheelType.MotorAndTurn)
-            {
                 collider.steerAngle = Mathf.Lerp(collider.steerAngle, Mathf.Lerp(slowSteeringAngle, steeringAngle, Mathf.Log(rigidbody.velocity.magnitude) * 1.1f) * input.x, Time.deltaTime * 15);
-            }
 
             #endregion
 
@@ -105,7 +103,7 @@ public class Car : MonoBehaviour
                     wheels[x].wheelSpin += transform.InverseTransformDirection(rigidbody.velocity).z * Mathf.PI;
             }
             else if (wheels[x].type == Wheel.WheelType.Motor || wheels[x].type == Wheel.WheelType.MotorAndTurn)
-                wheels[x].wheelSpin += transform.InverseTransformDirection(rigidbody.velocity).z * Mathf.PI;
+                wheels[x].wheelSpin += -input.y * Mathf.PI * 50;
 
             meshPosition += new Vector3(0, wheels[x].meshYOffset, 0);
 

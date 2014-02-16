@@ -15,6 +15,7 @@ public class PlayerNetwork : MonoBehaviour
         {
             gameObject.GetComponent<Car>().enabled = false;
             Destroy(playerCamera);
+            Destroy(gameObject.GetComponent<Rigidbody>());
         }
     }
 }
