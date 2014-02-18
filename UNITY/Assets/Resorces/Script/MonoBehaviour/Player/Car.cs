@@ -45,7 +45,7 @@ public class Car : MonoBehaviour
 
     private void Update()
     {
-        //Anti-Roll Forces
+        //Anti-Roll Bar Forces
         float antiRollLeft = 0;
         float antiRollRight = 0;
 
@@ -53,7 +53,6 @@ public class Car : MonoBehaviour
         if (Input.GetKeyDown(Settings.buttons[4].key))
         {
             transform.position = transform.position + new Vector3(0, 2, 0);
-            transform.rotation = Quaternion.Euler(new Vector3(0, 90, 0));
         }
 
         //Get User Input
@@ -65,8 +64,10 @@ public class Car : MonoBehaviour
 
             #region turnning
 
+            /*
             if (wheels[x].type == Wheel.WheelType.Turning || wheels[x].type == Wheel.WheelType.MotorAndTurn)
                 collider.steerAngle = Mathf.Lerp(collider.steerAngle, Mathf.Lerp(slowSteeringAngle, steeringAngle, Mathf.Log(rigidbody.velocity.magnitude) * 1.1f) * input.x, Time.deltaTime * 15);
+            */
 
             #endregion
 
@@ -77,9 +78,9 @@ public class Car : MonoBehaviour
                 if (rigidbody.velocity.magnitude < topSpeed)
                 {
                     if (transform.InverseTransformDirection(rigidbody.velocity).z > 0)
-                        collider.motorTorque = Torque * input.y - (input.x * 5);
-                    else if (rigidbody.velocity.magnitude < 10)
-                        collider.motorTorque = Torque * input.y - (input.x * 5);
+                        collider.motorTorque = Torque * input.y;
+                    else if (rigidbody.velocity.magnitude < Mathf.Clamp(topSpeed, 0, 10))
+                        collider.motorTorque = Torque * input.y;
                     else
                         collider.motorTorque = 0;
                 }
@@ -148,6 +149,13 @@ public class Car : MonoBehaviour
 
         rigidbody.AddForceAtPosition(-Vector3.up * (antiRollLeft - antiRollRight), -transform.right * (transform.localScale.x / 2));
         rigidbody.AddForceAtPosition(-Vector3.up * (antiRollRight - antiRollLeft), transform.right * (transform.localScale.x / 2));
+
+        #endregion
+
+        #region Rotational Forces
+
+        rigidbody.AddForceAtPosition(-Vector3.up * input.x * 500, Vector3.forward);
+        rigidbody.AddForceAtPosition(Vector3.up * input.x * 500, -Vector3.forward);
 
         #endregion
     }

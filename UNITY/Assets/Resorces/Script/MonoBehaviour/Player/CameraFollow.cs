@@ -27,6 +27,7 @@ public class CameraFollow : MonoBehaviour
         if (!target)
             return;
 
+        /*
         // Calculate the current rotation angles
         var wantedRotationAngle = target.transform.eulerAngles.y;
         var wantedHeight = target.transform.position.y + height;
@@ -54,5 +55,9 @@ public class CameraFollow : MonoBehaviour
         // Set the height of the camera
         transform.position = new Vector3(transform.position.x, currentHeight, transform.position.z);
         transform.LookAt(target.transform.position);
+         */
+
+        transform.position = Vector3.Lerp(transform.position, target.transform.position + new Vector3(distance, height, 0), Time.deltaTime * 2);
+        GetComponent<Camera>().orthographicSize = distance;
     }
 }
