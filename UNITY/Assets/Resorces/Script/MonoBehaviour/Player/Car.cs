@@ -14,6 +14,8 @@ public class Car : MonoBehaviour
     public float steeringAngle = 30;
     public float slowSteeringAngle = 30;
     public float antiRollForce = 50;
+    public GameObject forwardLight;
+    public GameObject backwardLight;
 
     #endregion
 
@@ -57,6 +59,21 @@ public class Car : MonoBehaviour
 
         //Get User Input
         Vector2 input = new Vector2(Settings.GetAxies(Settings.buttons[2].key, Settings.buttons[3].key), Settings.GetAxies(Settings.buttons[0].key, Settings.buttons[1].key));
+
+        #region Lights
+
+        if (transform.TransformDirection(rigidbody.velocity).z < -0.3f)
+        {
+            backwardLight.GetComponent<Light>().enabled = true;
+            forwardLight.GetComponent<Light>().enabled = false;
+        }
+        else
+        {
+            backwardLight.GetComponent<Light>().enabled = false;
+            forwardLight.GetComponent<Light>().enabled = true;
+        }
+
+        #endregion
 
         for (int x = 0; x < wheels.Length; x++)
         {

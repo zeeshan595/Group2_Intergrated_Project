@@ -57,7 +57,7 @@ public class CameraFollow : MonoBehaviour
         transform.LookAt(target.transform.position);
          */
 
-        transform.position = Vector3.Lerp(transform.position, target.transform.position + new Vector3(distance, height, 0), Time.deltaTime * 2);
+        transform.position = Vector3.Lerp(transform.position, target.transform.position + new Vector3(distance, height, target.transform.TransformDirection(target.rigidbody.velocity).z), Time.deltaTime * 2);
         GetComponent<Camera>().orthographicSize = distance;
     }
 }
