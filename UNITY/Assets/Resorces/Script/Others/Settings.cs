@@ -2,12 +2,14 @@ using UnityEngine;
 
 public class Settings
 {
-    public static Button[] buttons = new Button[5]{
-        new Button("Accelerate", KeyCode.UpArrow),
-        new Button("Brake/Reverse", KeyCode.DownArrow),
-        new Button("Turn Right", KeyCode.RightArrow),
-        new Button("Turn Left", KeyCode.LeftArrow),
+    //This class contains only static variables and methods for the other scripts to access.
+    public static Button[] buttons = new Button[]{
+        new Button("Accelerate", KeyCode.W),
+        new Button("Brake/Reverse", KeyCode.S),
+        new Button("Turn Right", KeyCode.D),
+        new Button("Turn Left", KeyCode.A),
         new Button("Reset Car", KeyCode.R),
+        new Button("Jump", KeyCode.Space)
     };
 
     public static int GetAxies(KeyCode pos, KeyCode neg)

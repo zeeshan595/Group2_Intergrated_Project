@@ -6,19 +6,26 @@ public class Car : MonoBehaviour
 
     #region Variables
 
-    public Wheel[] wheels;
-    public Vector3 centerOfMass = Vector3.zero;
-    public float Torque = 50;
-    public float topSpeed = 7;
-    public float topSpeedTurning = 7;
-    public float steeringAngle = 30;
-    public float slowSteeringAngle = 30;
-    public float antiRollForce = 50;
+    public Wheel[] wheels; // The Wheels of the Car.
+    public Vector3 centerOfMass = Vector3.zero; // Center of the mass in vector3.
+    public float Torque = 50; // Torque applied to each wheel when pressed accelerate.
+    public float topSpeed = 7; // Top Speed of the car.
+    public float topSpeedTurning = 7; // Top speed of the car when its turnning.
+    public float steeringAngle = 30; // Minimum steering angle of the car.
+    public float slowSteeringAngle = 30; // Maximum steering angle of the car.
+    public float antiRollForce = 50; // Anit roll bar force amount.
+    public float jumpForce = 50; // Jump force when jump is pressed.
+    public bool canReset = true; // Can the car be reset.
+    public bool canJump = true; // Can the car Jump.
+
+    // GameObject with light component to represent forward lighting of the car.
     public GameObject forwardLight;
+    // GameObject with light component to represent backward lighting of the car.
     public GameObject backwardLight;
 
     #endregion
 
+    // When the scene starts this is executed.
     private void Start()
     {
         rigidbody.centerOfMass = centerOfMass;
@@ -45,17 +52,35 @@ public class Car : MonoBehaviour
         }
     }
 
+    // Every frame this method is executed.
     private void Update()
     {
         //Anti-Roll Bar Forces
         float antiRollLeft = 0;
         float antiRollRight = 0;
 
-        //Reset Car
-        if (Input.GetKeyDown(Settings.buttons[4].key))
+        #region Car Reset
+
+        if (Input.GetKeyDown(Settings.buttons[4].key) && canReset)
         {
             transform.position = transform.position + new Vector3(0, 2, 0);
+            transform.rotation = Quaternion.Euler(0, 90, 0);
+            canReset = false;
+            Invoke("enableReset", 3);
         }
+
+        #endregion
+
+        #region Car Jump
+
+        if (Input.GetKeyDown(Settings.buttons[5].key) && canJump)
+        {
+            rigidbody.AddForce(transform.up * jumpForce * 5000);
+            canJump = false;
+            Invoke("enableJump", 2);
+        }
+
+        #endregion
 
         //Get User Input
         Vector2 input = new Vector2(Settings.GetAxies(Settings.buttons[2].key, Settings.buttons[3].key), Settings.GetAxies(Settings.buttons[0].key, Settings.buttons[1].key));
@@ -64,13 +89,13 @@ public class Car : MonoBehaviour
 
         if (transform.TransformDirection(rigidbody.velocity).z < -0.3f)
         {
-            backwardLight.GetComponent<Light>().enabled = true;
-            forwardLight.GetComponent<Light>().enabled = false;
+            backwardLight.GetComponent<Light>().enabled = false;
+            forwardLight.GetComponent<Light>().enabled = true;
         }
         else
         {
-            backwardLight.GetComponent<Light>().enabled = false;
-            forwardLight.GetComponent<Light>().enabled = true;
+            backwardLight.GetComponent<Light>().enabled = true;
+            forwardLight.GetComponent<Light>().enabled = false;
         }
 
         #endregion
@@ -171,9 +196,29 @@ public class Car : MonoBehaviour
 
         #region Rotational Forces
 
-        rigidbody.AddForceAtPosition(-Vector3.up * input.x * 500, Vector3.forward);
-        rigidbody.AddForceAtPosition(Vector3.up * input.x * 500, -Vector3.forward);
+        rigidbody.AddForceAtPosition(-Vector3.up * input.x * 500, Vector3.right);
+        rigidbody.AddForceAtPosition(Vector3.up * input.x * 500, -Vector3.right);
 
         #endregion
+    }
+
+    /*
+     * When the player clicks reset button a timer starts to make sure the player does 
+     * not click it to soon and has to wait after the timer is finished this method 
+     * changes the boolean back to true so the player can click reset button again.
+    */
+    private void enableReset()
+    {
+        canReset = true;
+    }
+
+    /*
+     * When the player clicks jump button a timer starts to make sure the player does 
+     * not click it to soon and has to wait after the timer is finished this method 
+     * changes the boolean back to true so the player can click jump button again.
+    */
+    private void enableJump()
+    {
+        canJump = true;
     }
 }
