@@ -6,30 +6,31 @@ public class Car : MonoBehaviour
 
     #region Variables
 
-    public Wheel[] wheels; // The Wheels of the Car.
-    public Vector3 centerOfMass = Vector3.zero; // Center of the mass in vector3.
-    public float Torque = 50; // Torque applied to each wheel when pressed accelerate.
-    public float topSpeed = 7; // Top Speed of the car.
-    public float topSpeedTurning = 7; // Top speed of the car when its turnning.
-    public float steeringAngle = 30; // Minimum steering angle of the car.
-    public float slowSteeringAngle = 30; // Maximum steering angle of the car.
-    public float antiRollForce = 50; // Anit roll bar force amount.
-    public float jumpForce = 50; // Jump force when jump is pressed.
-    public bool canReset = true; // Can the car be reset.
-    public bool canJump = true; // Can the car Jump.
+    public Wheel[] wheels; //The Wheels of the Car.
+    public Vector3 centerOfMass = Vector3.zero; //Center of the mass in vector3.
+    public float Torque = 50; //Torque applied to each wheel when pressed accelerate.
+    public float topSpeed = 7; //Top Speed of the car.
+    public float topSpeedTurning = 7; //Top speed of the car when its turnning.
+    public float steeringAngle = 30; //Minimum steering angle of the car.
+    public float slowSteeringAngle = 30; //Maximum steering angle of the car.
+    public float antiRollForce = 50; //Anit roll bar force amount.
+    public float jumpForce = 50; //Jump force when jump is pressed.
+    public bool canReset = true; //Can the car be reset.
+    public bool canJump = true; //Can the car Jump.
 
-    // GameObject with light component to represent forward lighting of the car.
+    //GameObject with light component to represent forward lighting of the car.
     public GameObject forwardLight;
-    // GameObject with light component to represent backward lighting of the car.
+    //GameObject with light component to represent backward lighting of the car.
     public GameObject backwardLight;
 
     #endregion
 
-    // When the scene starts this is executed.
+    //When the scene starts this is executed.
     private void Start()
     {
         rigidbody.centerOfMass = centerOfMass;
 
+        //Setup all the wheels
         for (int x = 0; x < wheels.Length; x++)
         {
             WheelCollider w;
@@ -52,10 +53,10 @@ public class Car : MonoBehaviour
         }
     }
 
-    // Every frame this method is executed.
+    //Every frame this method is executed.
     private void Update()
     {
-        //Anti-Roll Bar Forces
+        //Anti-Roll Bar Setup
         float antiRollLeft = 0;
         float antiRollRight = 0;
 
@@ -87,6 +88,7 @@ public class Car : MonoBehaviour
 
         #region Lights
 
+        //-0.3f because sometimes when the car stops or just rolls back it changes the light.
         if (transform.TransformDirection(rigidbody.velocity).z < -0.3f)
         {
             backwardLight.GetComponent<Light>().enabled = false;
@@ -107,6 +109,8 @@ public class Car : MonoBehaviour
             #region turnning
 
             /*
+             * Scraped since game is 2D
+
             if (wheels[x].type == Wheel.WheelType.Turning || wheels[x].type == Wheel.WheelType.MotorAndTurn)
                 collider.steerAngle = Mathf.Lerp(collider.steerAngle, Mathf.Lerp(slowSteeringAngle, steeringAngle, Mathf.Log(rigidbody.velocity.magnitude) * 1.1f) * input.x, Time.deltaTime * 15);
             */
