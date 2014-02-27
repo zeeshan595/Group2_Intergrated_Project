@@ -13,6 +13,7 @@ public class Car : MonoBehaviour
     public float topSpeedTurning = 7; //Top speed of the car when its turnning.
     public float steeringAngle = 30; //Minimum steering angle of the car.
     public float slowSteeringAngle = 30; //Maximum steering angle of the car.
+    public bool antiRollBars = false;
     public float antiRollForce = 50; //Anit roll bar force amount.
     public float jumpForce = 50; //Jump force when jump is pressed.
     public bool canReset = true; //Can the car be reset.
@@ -89,7 +90,7 @@ public class Car : MonoBehaviour
         #region Lights
 
         //-0.3f because sometimes when the car stops or just rolls back it changes the light.
-        if (transform.TransformDirection(rigidbody.velocity).z < -0.3f)
+        if (transform.TransformDirection(rigidbody.velocity).z < 0.3f)
         {
             backwardLight.GetComponent<Light>().enabled = false;
             forwardLight.GetComponent<Light>().enabled = true;
@@ -163,41 +164,46 @@ public class Car : MonoBehaviour
 
             #endregion
 
-            #region Anti Roll Bar Calculations
-
-            if (wheels[x].wheelPosition != Wheel.WheelPosition.Middle)
+            if (antiRollBars)
             {
-                float wheelTravel;
-                WheelHit wheelHit;
-                bool ground = collider.GetGroundHit(out wheelHit);
+                #region Anti Roll Bar Calculations
 
-                if (ground)
-                    wheelTravel = (-collider.transform.InverseTransformPoint(wheelHit.point).y - collider.radius) / collider.suspensionDistance;
-                else
-                    wheelTravel = 1.0f;
-
-                float wheelRollForce = wheelTravel * antiRollForce * rigidbody.velocity.magnitude;
-
-                if (wheels[x].wheelPosition == Wheel.WheelPosition.Left)
+                if (wheels[x].wheelPosition != Wheel.WheelPosition.Middle)
                 {
-                    antiRollLeft += wheelRollForce;
+                    float wheelTravel;
+                    WheelHit wheelHit;
+                    bool ground = collider.GetGroundHit(out wheelHit);
+
+                    if (ground)
+                        wheelTravel = (-collider.transform.InverseTransformPoint(wheelHit.point).y - collider.radius) / collider.suspensionDistance;
+                    else
+                        wheelTravel = 1.0f;
+
+                    float wheelRollForce = wheelTravel * antiRollForce * rigidbody.velocity.magnitude;
+
+                    if (wheels[x].wheelPosition == Wheel.WheelPosition.Left)
+                    {
+                        antiRollLeft += wheelRollForce;
+                    }
+                    else if (wheels[x].wheelPosition == Wheel.WheelPosition.Right)
+                    {
+                        antiRollRight += wheelRollForce;
+                    }
                 }
-                else if (wheels[x].wheelPosition == Wheel.WheelPosition.Right)
-                {
-                    antiRollRight += wheelRollForce;
-                }
+
+                #endregion
             }
+        }
+
+        if (antiRollBars)
+        {
+            #region Apply Anti Roll Bar Forces
+
+            rigidbody.AddForceAtPosition(-Vector3.up * (antiRollLeft - antiRollRight), -transform.right * (transform.localScale.x / 2));
+            rigidbody.AddForceAtPosition(-Vector3.up * (antiRollRight - antiRollLeft), transform.right * (transform.localScale.x / 2));
 
             #endregion
         }
-
-        #region Apply Anti Roll Bar Forces
-
-        rigidbody.AddForceAtPosition(-Vector3.up * (antiRollLeft - antiRollRight), -transform.right * (transform.localScale.x / 2));
-        rigidbody.AddForceAtPosition(-Vector3.up * (antiRollRight - antiRollLeft), transform.right * (transform.localScale.x / 2));
-
-        #endregion
-
         #region Rotational Forces
 
         rigidbody.AddForceAtPosition(-Vector3.up * input.x * 500, Vector3.right);
