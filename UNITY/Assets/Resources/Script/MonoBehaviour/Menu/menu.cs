@@ -8,13 +8,13 @@ public class menu : MonoBehaviour
 
     private void OnGUI()
     {
-        if (GUILayout.Button("Action Car"))
+        if (GUILayout.Button("Action Car", GUILayout.Height(150), GUILayout.Width(200)))
         {
             Instantiate(action, new Vector3(0, 1, 0), Quaternion.identity);
             Destroy(gameObject);
         }
 
-        if (GUILayout.Button("Cyberpunk Car"))
+        if (GUILayout.Button("Cyberpunk Car", GUILayout.Height(150), GUILayout.Width(200)))
         {
             Instantiate(cyberpunk, new Vector3(0, 1, 0), Quaternion.identity);
             Destroy(gameObject);

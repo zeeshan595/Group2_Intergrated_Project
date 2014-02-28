@@ -75,17 +75,31 @@ public class Car : MonoBehaviour
 
         #region Car Jump
 
-        if (Input.GetKeyDown(Settings.buttons[5].key) && canJump)
+        if ((Input.GetKeyDown(Settings.buttons[5].key) || (Input.touchCount > 1 && (Input.touches[Input.touchCount - 1].phase == TouchPhase.Began || Input.touches[0].phase == TouchPhase.Began))) && canJump)
         {
             rigidbody.AddForce(transform.up * jumpForce * 5000);
-            canJump = false;
-            Invoke("enableJump", 2);
         }
+        canJump = false;
 
         #endregion
 
-        //Get User Input
-        Vector2 input = new Vector2(Settings.GetAxies(Settings.buttons[2].key, Settings.buttons[3].key), Settings.GetAxies(Settings.buttons[0].key, Settings.buttons[1].key));
+        #region Get Input
+        Vector2 input = Vector2.zero;
+
+#if UNITY_ANDROID
+        input.x = Input.acceleration.x * 3;
+
+        foreach (Touch touch in Input.touches)
+        {
+            if (touch.position.x < Screen.width / 2)
+                input.y = -1;
+            else
+                input.y = 1;
+        }
+#else
+        input = new Vector2(Settings.GetAxies(Settings.buttons[2].key, Settings.buttons[3].key), Settings.GetAxies(Settings.buttons[0].key, Settings.buttons[1].key));
+#endif
+        #endregion
 
         #region Lights
 
@@ -149,6 +163,9 @@ public class Car : MonoBehaviour
                     wheels[x].wheelSpin += transform.InverseTransformDirection(rigidbody.velocity).z * Mathf.PI;
                 else
                     wheels[x].wheelSpin += transform.InverseTransformDirection(rigidbody.velocity).z * Mathf.PI;
+
+                if (!canJump)
+                    canJump = true;
             }
             else if (wheels[x].type == Wheel.WheelType.Motor || wheels[x].type == Wheel.WheelType.MotorAndTurn)
                 wheels[x].wheelSpin += -input.y * Mathf.PI * 50;
@@ -164,10 +181,10 @@ public class Car : MonoBehaviour
 
             #endregion
 
+            #region Anti Roll Bar Calculations
+
             if (antiRollBars)
             {
-                #region Anti Roll Bar Calculations
-
                 if (wheels[x].wheelPosition != Wheel.WheelPosition.Middle)
                 {
                     float wheelTravel;
@@ -190,20 +207,21 @@ public class Car : MonoBehaviour
                         antiRollRight += wheelRollForce;
                     }
                 }
-
-                #endregion
             }
-        }
-
-        if (antiRollBars)
-        {
-            #region Apply Anti Roll Bar Forces
-
-            rigidbody.AddForceAtPosition(-Vector3.up * (antiRollLeft - antiRollRight), -transform.right * (transform.localScale.x / 2));
-            rigidbody.AddForceAtPosition(-Vector3.up * (antiRollRight - antiRollLeft), transform.right * (transform.localScale.x / 2));
 
             #endregion
         }
+
+        #region Apply Anti Roll Bar Forces
+
+        if (antiRollBars)
+        {
+            rigidbody.AddForceAtPosition(-Vector3.up * (antiRollLeft - antiRollRight), -transform.right * (transform.localScale.x / 2));
+            rigidbody.AddForceAtPosition(-Vector3.up * (antiRollRight - antiRollLeft), transform.right * (transform.localScale.x / 2));
+        }
+
+        #endregion
+        
         #region Rotational Forces
 
         rigidbody.AddForceAtPosition(-Vector3.up * input.x * 500, Vector3.right);
@@ -220,15 +238,5 @@ public class Car : MonoBehaviour
     private void enableReset()
     {
         canReset = true;
-    }
-
-    /*
-     * When the player clicks jump button a timer starts to make sure the player does 
-     * not click it to soon and has to wait after the timer is finished this method 
-     * changes the boolean back to true so the player can click jump button again.
-    */
-    private void enableJump()
-    {
-        canJump = true;
     }
 }

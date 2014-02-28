@@ -4,10 +4,10 @@ public class Settings
 {
     //This class contains only static variables and methods for the other scripts to access.
     public static Button[] buttons = new Button[]{
-        new Button("Accelerate", KeyCode.W),
-        new Button("Brake/Reverse", KeyCode.S),
-        new Button("Turn Right", KeyCode.D),
-        new Button("Turn Left", KeyCode.A),
+        new Button("Accelerate", KeyCode.D),
+        new Button("Brake/Reverse", KeyCode.A),
+        new Button("Rotate Clockwise", KeyCode.W),
+        new Button("Rotate Anti-clockwise", KeyCode.S),
         new Button("Reset Car", KeyCode.R),
         new Button("Jump", KeyCode.Space)
     };
