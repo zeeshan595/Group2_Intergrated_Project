@@ -4,25 +4,31 @@ using System.Collections;
 public class menu : MonoBehaviour
 {
     public GameObject action;
+    public GameObject romance;
     public GameObject cyberpunk;
 
     private void OnGUI()
     {
-        if (GUILayout.Button("Action Car", GUILayout.Height(150), GUILayout.Width(200)))
+        if (GUI.Button(new Rect(5, 5, 200, 200), "Action Car"))
         {
             Instantiate(action, new Vector3(0, 1, 0), Quaternion.identity);
             Destroy(gameObject);
         }
 
-        if (GUILayout.Button("Cyberpunk Car", GUILayout.Height(150), GUILayout.Width(200)))
+        if (GUI.Button(new Rect(210, 5, 200, 200), "Romance Car"))
+        {
+            Instantiate(romance, new Vector3(0, 1, 0), Quaternion.identity);
+            Destroy(gameObject);
+        }
+
+        if (GUI.Button(new Rect(5, 210, 200, 200), "Cyberpunk Car"))
         {
             Instantiate(cyberpunk, new Vector3(0, 1, 0), Quaternion.identity);
             Destroy(gameObject);
         }
-        GUILayout.Label("________________\n\n");
         for (int x = 0; x < Settings.buttons.Length; x++)
         {
-            GUILayout.Label(Settings.buttons[x].name + ": " + Settings.buttons[x].key);
+            GUI.Label(new Rect(5, 420 + (x * 15), 200, 200), Settings.buttons[x].name + ": " + Settings.buttons[x].key);
         }
     }
 }
