@@ -10,7 +10,7 @@ public class Car : MonoBehaviour
     public Vector3 centerOfMass = Vector3.zero; //Center of the mass in vector3.
     public float Torque = 50; //Torque applied to each wheel when pressed accelerate.
     public float topSpeed = 7; //Top Speed of the car.
-    public float topSpeedTurning = 7; //Top speed of the car when its turnning.
+    public float topSpeedReverse = 7; //Top speed of the car when its going backwards.
     public float steeringAngle = 30; //Minimum steering angle of the car.
     public float slowSteeringAngle = 30; //Maximum steering angle of the car.
     public bool antiRollBars = false;
@@ -24,11 +24,16 @@ public class Car : MonoBehaviour
     //GameObject with light component to represent backward lighting of the car.
     public GameObject backwardLight;
 
+    //When Passed a checkpoint this will update
+    [System.NonSerialized]
+    public Vector3 resetPosition;
+
     #endregion
 
     //When the scene starts this is executed.
     private void Start()
     {
+        resetPosition = transform.position;
         rigidbody.centerOfMass = centerOfMass;
 
         //Setup all the wheels
@@ -65,10 +70,8 @@ public class Car : MonoBehaviour
 
         if (Input.GetKeyDown(Settings.buttons[4].key) && canReset)
         {
-            transform.position = transform.position + new Vector3(0, 2, 0);
+            transform.position = resetPosition;
             transform.rotation = Quaternion.Euler(0, 90, 0);
-            canReset = false;
-            Invoke("enableReset", 3);
         }
 
         #endregion
@@ -140,7 +143,7 @@ public class Car : MonoBehaviour
                 {
                     if (transform.InverseTransformDirection(rigidbody.velocity).z > 0)
                         collider.motorTorque = Torque * input.y;
-                    else if (rigidbody.velocity.magnitude < Mathf.Clamp(topSpeed, 0, 10))
+                    else if (rigidbody.velocity.magnitude < topSpeedReverse)
                         collider.motorTorque = Torque * input.y;
                     else
                         collider.motorTorque = 0;
@@ -228,15 +231,5 @@ public class Car : MonoBehaviour
         rigidbody.AddForceAtPosition(Vector3.up * input.x * 500, -Vector3.right);
 
         #endregion
-    }
-
-    /*
-     * When the player clicks reset button a timer starts to make sure the player does 
-     * not click it to soon and has to wait after the timer is finished this method 
-     * changes the boolean back to true so the player can click reset button again.
-    */
-    private void enableReset()
-    {
-        canReset = true;
     }
 }

@@ -1,15 +1,53 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Elevator : MonoBehaviour {
+public class Elevator : MonoBehaviour
+{
+    public float height = 5;
+    public float speed = 2.0f;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    private bool playerOn = false;
+    private float normalHeight = 0;
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            StartCoroutine(changeStatus(0.3f, true));
+            other.transform.parent.gameObject.transform.parent = gameObject.transform;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            StartCoroutine(changeStatus(1, false));
+            other.transform.parent.gameObject.transform.parent = null;
+        }
+    }
+
+    private void Start()
+    {
+        normalHeight = transform.position.y;
+        height += normalHeight;
+    }
+
+    private void Update()
+    {
+        if (playerOn)
+        {
+            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, height, transform.position.z), (Time.deltaTime / Mathf.Abs(height - normalHeight)) * speed);
+        }
+        else
+        {
+            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, normalHeight, transform.position.z), (Time.deltaTime / Mathf.Abs(height - normalHeight)) * speed);
+        }
+    }
+
+    private IEnumerator changeStatus(float t, bool b)
+    {
+        yield return new WaitForSeconds(t);
+        playerOn = b;
+    }
 }
