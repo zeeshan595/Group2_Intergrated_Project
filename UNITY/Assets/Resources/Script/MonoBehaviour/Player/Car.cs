@@ -46,7 +46,6 @@ public class Car : MonoBehaviour
             else
                 w = wheels[x].gameObject.GetComponent<WheelCollider>();
 
-
             w.mass = wheels[x].mass;
             w.radius = wheels[x].radius;
             w.suspensionDistance = wheels[x].suspentionDistance;
@@ -100,6 +99,7 @@ public class Car : MonoBehaviour
                 input.y = 1;
         }
 #else
+        //3 * -(((Screen.width / 2) - Input.mousePosition.x) / (Screen.width / 2))
         input = new Vector2(Settings.GetAxies(Settings.buttons[2].key, Settings.buttons[3].key), Settings.GetAxies(Settings.buttons[0].key, Settings.buttons[1].key));
 #endif
         #endregion
@@ -116,6 +116,15 @@ public class Car : MonoBehaviour
         {
             backwardLight.GetComponent<Light>().enabled = true;
             forwardLight.GetComponent<Light>().enabled = false;
+        }
+
+        #endregion
+
+        #region anti gravity Easter Egg
+
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            rigidbody.useGravity = !rigidbody.useGravity;
         }
 
         #endregion
@@ -156,11 +165,11 @@ public class Car : MonoBehaviour
 
             #region wheels mesh
 
-            Vector3 meshPosition = wheels[x].gameObject.transform.position + (wheels[x].gameObject.transform.TransformDirection(-Vector3.up) * (wheels[x].meshSuspentionDistance - (wheels[x].radius / 2)));
+            float meshHeight = -wheels[x].suspentionDistance;
             RaycastHit hit;
             if (Physics.Raycast(wheels[x].gameObject.transform.position, -transform.up, out hit, wheels[x].meshSuspentionDistance))
             {
-                meshPosition = wheels[x].gameObject.transform.position + (wheels[x].gameObject.transform.TransformDirection(-Vector3.up) * (hit.distance - (wheels[x].radius / 2)));
+                meshHeight = -hit.distance + wheels[x].radius;
 
                 if (wheels[x].type == Wheel.WheelType.Turning || wheels[x].type == Wheel.WheelType.Stationary || input.y == 0)
                     wheels[x].wheelSpin += transform.InverseTransformDirection(rigidbody.velocity).z * Mathf.PI;
@@ -173,12 +182,11 @@ public class Car : MonoBehaviour
             else if (wheels[x].type == Wheel.WheelType.Motor || wheels[x].type == Wheel.WheelType.MotorAndTurn)
                 wheels[x].wheelSpin += -input.y * Mathf.PI * 50;
 
-            meshPosition += new Vector3(0, wheels[x].meshYOffset, 0);
-
             int totalChildren = wheels[x].gameObject.transform.childCount;
             for (int c = 0; c < totalChildren; c++)
             {
-                wheels[x].gameObject.transform.GetChild(c).transform.position = meshPosition;
+                meshHeight = Mathf.Clamp(meshHeight + wheels[x].meshYOffset, -wheels[x].suspentionDistance, 0);
+                wheels[x].gameObject.transform.GetChild(c).transform.position = wheels[x].gameObject.transform.position + wheels[x].gameObject.transform.TransformDirection(new Vector3(0, meshHeight, 0));
                 wheels[x].gameObject.transform.GetChild(c).transform.localRotation = Quaternion.Euler(new Vector3(wheels[x].wheelSpin, collider.steerAngle, 90));
             }
 
@@ -232,4 +240,17 @@ public class Car : MonoBehaviour
 
         #endregion
     }
+
+    #if UNITY_ANDROID
+    //RESET BUTTON FOR ANDROID
+
+    private void OnGUI()
+    {
+        if (GUI.Button(new Rect(5, 5, 100, 100), "Reset"))
+        {
+            transform.position = resetPosition;
+            transform.rotation = Quaternion.Euler(0, 90, 0);
+        }
+    }
+    #endif
 }
