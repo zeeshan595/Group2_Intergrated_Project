@@ -1,0 +1,111 @@
+body {
+	font-family: tahoma,'trebuchet ms',sans-serif;
+	font-size: 8pt;
+	line-height: 14pt;
+	cursor: default;
+	margin: 0;
+	background-image: url('Images/bg.jpg');
+	background-size: cover;
+	background-repeat:no-repeat;
+    background-position:center;
+	background-attachment:fixed;
+}
+
+#wrapper {
+	margin: 0 auto;
+	width: 700px;
+	margin-bottom: 100px;
+}
+
+#header {
+	height: 300px;
+	width: 100%;
+}
+
+#subheader {
+	height: 20px;
+	width: 695px;
+	background: url('Images/subheader.png');
+	text-transform: uppercase;
+	font-size: 1.2em;
+	color: white;
+	text-align: right;
+	padding: 0 5px 0 0;
+	letter-spacing: 2px;
+}
+
+#navi {
+	height: 45px;
+	width: 100%;
+	text-align: center;
+}
+
+a:link.navi,a:visited.navi,a:active.navi {
+	display: inline-block;
+	width: 110px;
+	margin: 10px 20px;
+	background-color: #956a5b;
+	border: #543a2d 1px solid;
+	text-transform: uppercase;
+	color: white;
+	text-decoration:none;
+}
+a:hover.navi {
+	background: #b29456;
+	cursor: default;
+}
+
+.button,.button:visited,.button:active {
+	background-color: #956a5b;
+	border: #543a2d 1px solid;
+	padding: 5px;
+	color: #fff;
+	width: 110px;
+	height:30px;
+	text-decoration:none;
+}
+.button:hover {
+	background: #b29456;
+	cursor: default;
+}
+
+.main {
+	padding: 15px 20px 15px 0;
+	background: url('Images/bg2middle.png') right repeat-y;
+}
+
+.top {
+	background: url('Images/bg2top.png') no-repeat right;
+	height: 55px;
+}
+
+
+.left {
+	width: 135px;
+	min-height: 150px;
+	float: left;
+}
+
+.right {
+	width: 527px;
+	min-height: 150px;
+	margin-left: 130px;
+}
+
+.messageBlock{
+	color: #000;
+	text-decoration: none;
+	background-color: rgba(150,150,150,0.2);
+	margin: 5px;
+	padding: 5px;
+	cursor: default;
+}
+.messageBlock:hover{
+	background-color: rgba(150,150,150,0.5);
+}
+
+.footer{
+	position: relative;
+	left: 110px;
+	font-weight: bold;
+}

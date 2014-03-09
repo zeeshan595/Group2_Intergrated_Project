@@ -1,33 +1,33 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" type="text/css" href="css/style.css" />
-<title>Impossible Six</title>
-<meta name="title" content="Impossible Six">
-<meta name="description" content="Awesome Website" />
-<meta name="keywords" content="Group 2, Project, Integrated, Project" />
-<meta name="author" content="Zeeshan Abid, Kati Salminen" />
-
-<meta name="robots" content="noindex" />
-<link rel="shortcut icon" href="Images/favicon.ico" />
-</head>
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Impossible Six</title>
+		<link rel="stylesheet" href="style.css" type="text/css" />
+	</head>
 <body>
-<div class="content">
-<img src="Images/logo.png" class="logo" />
+	
+<div id="wrapper">
+<div id="header">&nbsp;</div>
+<div id="subheader">Game Progress Blog</div>
 
-<div class="ribbon">Game Progress Blog</div>
-<div class="navBar">
-<a href="index.php"><div class="navButton">Home</div></a>
-<a href="about.php"><div class="navButton">About</div></a>
-<a href="contact.php"><div class="navButton">Contact</div></a>
-
+<div id="navi">
+<a href="index" class="navi">Home</a>
+<a href="about" class="navi">About</a>
 <?php
-if (!isset($_COOKIE['Username']))
-	echo "<a href='login.php'><div class='navButton'>Login</div></a>";
-else
-	echo "<a href='logout.php'><div class='navButton'>Logout</div></a>";
+if (isset($_COOKIE['Username']))
+{
 ?>
-
+	<a href="contact" class="navi">Messages</a>
+	<a href="profile" class="navi">Profile</a>
+<?php
+}
+else
+{
+?>
+	<a href="contact" class="navi">Contact</a>
+	<a href="login" class="navi">Login</a>
+<?php
+}
+?>
 </div>

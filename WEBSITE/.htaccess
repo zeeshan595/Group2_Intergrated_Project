@@ -1,0 +1,12 @@
+# Disable server signature
+ServerSignature Off
+
+Options -Indexes
+
+RewriteEngine on 
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteCond %{REQUEST_FILENAME}\.php -f 
+RewriteRule ^(.*)$ $1.php
+
+ErrorDocument 403 http://impossiblesix.net/404
+ErrorDocument 404 http://impossiblesix.net/404

@@ -1,8 +1,6 @@
-<div class="footer">
-&copy; Impossible Six
+	<div class="footer">
+		&copy; impossiblesix.net 2014
+	</div>
 </div>
-</div>
-
-<script src="js/default.js" type="text/javascript"></script>
 </body>
 </html>
