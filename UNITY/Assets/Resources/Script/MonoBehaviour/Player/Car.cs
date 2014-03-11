@@ -7,8 +7,10 @@ public class Car : MonoBehaviour
     #region Variables
 
     public Wheel[] wheels; //The Wheels of the Car.
+    public GameObject[] attachments; //Attachments attached to the car.
     public Vector3 centerOfMass = Vector3.zero; //Center of the mass in vector3.
-    public float Torque = 50; //Torque applied to each wheel when pressed accelerate.
+    public int health = 8; //Health of the car.
+    public float torque = 50; //Torque applied to each wheel when pressed accelerate.
     public float topSpeed = 7; //Top Speed of the car.
     public float topSpeedReverse = 7; //Top speed of the car when its going backwards.
     public float steeringAngle = 30; //Minimum steering angle of the car.
@@ -27,6 +29,8 @@ public class Car : MonoBehaviour
     //When Passed a checkpoint this will update
     [System.NonSerialized]
     public Vector3 resetPosition;
+
+    private float timer = 0;
 
     #endregion
 
@@ -61,6 +65,9 @@ public class Car : MonoBehaviour
     //Every frame this method is executed.
     private void Update()
     {
+        //Update Timer
+        timer += Time.deltaTime;
+
         //Anti-Roll Bar Setup
         float antiRollLeft = 0;
         float antiRollRight = 0;
@@ -151,9 +158,9 @@ public class Car : MonoBehaviour
                 if (rigidbody.velocity.magnitude < topSpeed)
                 {
                     if (transform.InverseTransformDirection(rigidbody.velocity).z > 0)
-                        collider.motorTorque = Torque * input.y;
+                        collider.motorTorque = torque * input.y;
                     else if (rigidbody.velocity.magnitude < topSpeedReverse)
-                        collider.motorTorque = Torque * input.y;
+                        collider.motorTorque = torque * input.y;
                     else
                         collider.motorTorque = 0;
                 }
@@ -241,7 +248,23 @@ public class Car : MonoBehaviour
         #endregion
     }
 
-    #if UNITY_ANDROID
+    #region Health
+
+    public int rediuceHealth(int amount)
+    {
+        health -= amount;
+        return health;
+    }
+
+    public int increaseHealth(int amount)
+    {
+        health += amount;
+        return health;
+    }
+
+    #endregion
+
+#if UNITY_ANDROID
     //RESET BUTTON FOR ANDROID
 
     private void OnGUI()
@@ -252,5 +275,10 @@ public class Car : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 90, 0);
         }
     }
-    #endif
+#else
+    private void OnGUI()
+    {
+        GUILayout.Box(timer.ToString());
+    }
+#endif
 }

@@ -2,15 +2,27 @@ using UnityEngine;
 
 public class Settings
 {
-    //This class contains only static variables and methods for the other scripts to access.
+    public enum CarType
+    {
+        Action = 0,
+        Cyberpunk = 1,
+        Romance = 2,
+        ScienceFunction = 3,
+        Fantasy = 4,
+        Adventure = 5,
+        GirlyGirl = 6
+    }
+
     public static Button[] buttons = new Button[]{
         new Button("Accelerate", KeyCode.D),
         new Button("Brake/Reverse", KeyCode.A),
-        new Button("Rotate Clockwise", KeyCode.W),
-        new Button("Rotate Anti-clockwise", KeyCode.S),
+        new Button("Rotate Clockwise", KeyCode.RightArrow),
+        new Button("Rotate Anti-clockwise", KeyCode.LeftArrow),
         new Button("Reset Car", KeyCode.R),
         new Button("Jump", KeyCode.Space)
     };
+
+    public static CarType carType = CarType.Action; // Action car (default)
 
     public static int GetAxies(KeyCode pos, KeyCode neg)
     {
