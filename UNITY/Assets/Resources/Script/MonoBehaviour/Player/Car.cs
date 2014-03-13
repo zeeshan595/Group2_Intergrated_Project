@@ -9,7 +9,8 @@ public class Car : MonoBehaviour
     public Wheel[] wheels; //The Wheels of the Car.
     public GameObject[] attachments; //Attachments attached to the car.
     public Vector3 centerOfMass = Vector3.zero; //Center of the mass in vector3.
-    public int health = 8; //Health of the car.
+    public int health = 3; //Health of the car.
+    public Texture[] healthTexture;
     public float torque = 50; //Torque applied to each wheel when pressed accelerate.
     public float topSpeed = 7; //Top Speed of the car.
     public float topSpeedReverse = 7; //Top speed of the car when its going backwards.
@@ -278,7 +279,17 @@ public class Car : MonoBehaviour
 #else
     private void OnGUI()
     {
-        GUILayout.Box(timer.ToString());
+        /*
+        //GUILayout.Box(timer.ToString());
+        if (health == 3)
+            GUI.DrawTexture(new Rect(5, Screen.height - 505, 500, 500), healthTexture[0]);
+        else if (health == 2)
+            GUI.DrawTexture(new Rect(5, Screen.height - 505, 500, 500), healthTexture[1]);
+        else if (health == 1)
+            GUI.DrawTexture(new Rect(5, Screen.height - 505, 500, 500), healthTexture[2]);
+        else
+            GUI.DrawTexture(new Rect(5, Screen.height - 505, 500, 500), healthTexture[3]);
+         */
     }
 #endif
 }
