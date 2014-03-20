@@ -7,10 +7,9 @@ public class Settings
         Action = 0,
         Cyberpunk = 1,
         Romance = 2,
-        ScienceFunction = 3,
+        ScienceFiction = 3,
         Fantasy = 4,
-        Adventure = 5,
-        GirlyGirl = 6
+        Adventure = 5
     }
 
     public static Button[] buttons = new Button[]{

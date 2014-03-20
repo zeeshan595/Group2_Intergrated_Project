@@ -11,11 +11,9 @@ public class spawner : MonoBehaviour
     public GameObject adventure;
     public GameObject girlyGirl;
 
-    public Settings.CarType carType;
-
     private void Start()
     {
-        switch (carType)
+        switch (Settings.carType)
         {
             case Settings.CarType.Adventure:
                 Instantiate(adventure, transform.position, Quaternion.identity);
@@ -26,13 +24,10 @@ public class spawner : MonoBehaviour
             case Settings.CarType.Fantasy:
                 Instantiate(fantasy, transform.position, Quaternion.identity);
                 break;
-            case Settings.CarType.GirlyGirl:
-                Instantiate(girlyGirl, transform.position, Quaternion.identity);
-                break;
             case Settings.CarType.Romance:
                 Instantiate(romance, transform.position, Quaternion.identity);
                 break;
-            case Settings.CarType.ScienceFunction:
+            case Settings.CarType.ScienceFiction:
                 Instantiate(scienceFunction, transform.position, Quaternion.identity);
                 break;
             default: // Action car (default)

@@ -11,16 +11,18 @@ public class LevelEditor : MonoBehaviour
     public GameObject Light;
     public GameObject[] objects;
     public Material[] backgrounds;
+    public GameObject spawner;
 
     private int selectedBackground = 0;
     private bool isBackground = false;
-
-    private bool showObjectMenu = false;
+    private bool isSaved = false;
+    private bool chosingBackground = false;
+    private bool showSettings = false;
+    private bool showObjectMenu = true;
     private List<GameObject> objectsSpawned = new List<GameObject>();
     private GameObject selected = null;
     private GameObject lastSelected = null;
     private bool isGrid = true;
-    private bool gettingCode = false;
     private string editorData = "";
     private Color[] selectedColor;
     private Vector2 scrollView = Vector2.zero;
@@ -35,10 +37,6 @@ public class LevelEditor : MonoBehaviour
     private string scaleY = "";
 
     private Material lineMaterial;
-    private DropDown blockDropDown;
-    private DropDown carLists;
-
-    //obj.GetComponent<spawner>().carType
 
     #endregion
 
@@ -61,20 +59,14 @@ public class LevelEditor : MonoBehaviour
             lineMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
         }
 
-        List<string> blockList = new List<string>();
-        blockList.Add("Wood");
-        blockList.Add("Cyberpunk");
-        blockDropDown = new DropDown(blockList, 0);
 
-        blockList = new List<string>();
-        blockList.Add("Action");
-        blockList.Add("Cyber-Punk*");
-        blockList.Add("Romance");
-        blockList.Add("Science Fiction");
-        blockList.Add("Fantasy");
-        blockList.Add("Adventure*");
-        blockList.Add("Girly Girl*");
-        carLists = new DropDown(blockList, 0);
+        GameObject spwn = (GameObject)Instantiate(spawner, Vector3.zero, Quaternion.identity);
+        spwn.name = spawner.name;
+        MonoBehaviour[] behaviours = spwn.GetComponents<MonoBehaviour>();
+        foreach (MonoBehaviour m in behaviours)
+            m.enabled = false;
+
+        objectsSpawned.Add(spwn);
     }
 
     private void OnPostRender()
@@ -86,22 +78,24 @@ public class LevelEditor : MonoBehaviour
 
         GL.Color(new Color(0.3f, 0.3f, 0.3f, 0.7f));
 
-        for (int x = -Mathf.RoundToInt(camera.orthographicSize * 1.78f); x <= Mathf.RoundToInt(camera.orthographicSize * 1.78f); x++)
+        float offset = 3;
+
+        for (int x = -Mathf.RoundToInt(camera.orthographicSize * offset); x <= Mathf.RoundToInt(camera.orthographicSize * offset); x++)
         {
             GL.Begin(GL.LINES);
 
-            GL.Vertex3(x + Mathf.RoundToInt(transform.position.x) + 0.5f, -Mathf.RoundToInt(camera.orthographicSize * 1.78f) + Mathf.RoundToInt(transform.position.y), 1);
-            GL.Vertex3(x + Mathf.RoundToInt(transform.position.x) + 0.5f, Mathf.RoundToInt(camera.orthographicSize * 1.78f) + Mathf.RoundToInt(transform.position.y), 1);
+            GL.Vertex3(x + Mathf.RoundToInt(transform.position.x) + 0.5f, -Mathf.RoundToInt(camera.orthographicSize * offset) + Mathf.RoundToInt(transform.position.y), 1);
+            GL.Vertex3(x + Mathf.RoundToInt(transform.position.x) + 0.5f, Mathf.RoundToInt(camera.orthographicSize * offset) + Mathf.RoundToInt(transform.position.y), 1);
 
             GL.End();
         }
 
-        for (int c = -Mathf.RoundToInt(camera.orthographicSize * 1.78f); c <= Mathf.RoundToInt(camera.orthographicSize * 1.78f); c++)
+        for (int c = -Mathf.RoundToInt(camera.orthographicSize * offset); c <= Mathf.RoundToInt(camera.orthographicSize * offset); c++)
         {
             GL.Begin(GL.LINES);
 
-            GL.Vertex3(-Mathf.RoundToInt(camera.orthographicSize * 1.78f) + Mathf.RoundToInt(transform.position.x), c + Mathf.RoundToInt(transform.position.y) + 0.5f, 1);
-            GL.Vertex3(Mathf.RoundToInt(camera.orthographicSize * 1.78f) + Mathf.RoundToInt(transform.position.x), c + Mathf.RoundToInt(transform.position.y) + 0.5f, 1);
+            GL.Vertex3(-Mathf.RoundToInt(camera.orthographicSize * offset) + Mathf.RoundToInt(transform.position.x), c + Mathf.RoundToInt(transform.position.y) + 0.5f, 1);
+            GL.Vertex3(Mathf.RoundToInt(camera.orthographicSize * offset) + Mathf.RoundToInt(transform.position.x), c + Mathf.RoundToInt(transform.position.y) + 0.5f, 1);
 
             GL.End();
         }
@@ -109,13 +103,18 @@ public class LevelEditor : MonoBehaviour
 
     private void Update()
     {
-        if (gettingCode || Time.timeScale != 0)
+        if (Time.timeScale != 0)
             return;
 
         if (Input.GetKey(KeyCode.Mouse2) || Input.GetKey(KeyCode.Mouse1))
         {
             Vector2 movment = new Vector2(-Input.GetAxis("Mouse X"), -Input.GetAxis("Mouse Y"));
-            transform.Translate(movment * camera.orthographicSize * 0.05f);
+            if (!Input.GetKey(KeyCode.LeftControl))
+                transform.Translate(movment * camera.orthographicSize * 0.05f);
+            else
+            {
+                camera.orthographicSize = Mathf.Clamp(camera.orthographicSize + movment.x + movment.y, 1, 50);
+            }
         }
 
         if (Input.GetKey(KeyCode.Mouse0) && selected != null)
@@ -143,6 +142,9 @@ public class LevelEditor : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100))
             {
+                isSaved = false;
+                showSettings = false;
+
                 selected = hit.collider.gameObject;
                 while (selected.transform.parent != null)
                     selected = selected.transform.parent.gameObject;
@@ -156,9 +158,6 @@ public class LevelEditor : MonoBehaviour
 
                 scaleX = selected.transform.localScale.x.ToString();
                 scaleY = selected.transform.localScale.y.ToString();
-
-                if (selected.GetComponent<blockMaterial>())
-                    blockDropDown.selectedItem = selected.GetComponent<blockMaterial>().selected;
 
                 MeshRenderer[] renderers = selected.GetComponentsInChildren<MeshRenderer>();
                 selectedColor = new Color[renderers.Length];
@@ -186,12 +185,12 @@ public class LevelEditor : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Delete))
         {
-            if (selected != null)
+            if (selected != null && selected.tag != "Spawner")
             {
                 objectsSpawned.Remove(selected);
                 Destroy(selected);
             }
-            else if (lastSelected != null)
+            else if (lastSelected != null && lastSelected.tag != "Spawner")
             {
                 objectsSpawned.Remove(lastSelected);
                 Destroy(lastSelected);
@@ -216,88 +215,80 @@ public class LevelEditor : MonoBehaviour
         if (skin != null)
             GUI.skin = skin;
 
-        if (!gettingCode)
+        if (showObjectMenu)
         {
-            //=======TopLeft=======
-            if (showObjectMenu)
+            //=======TopRight=======
+            if (isSaved)
             {
-                if (GUI.Button(new Rect(5, 5, 50, 20), "Hide"))
-                    showObjectMenu = false;
+                if (GUI.Button(new Rect(Screen.width - 105, 5, 100, 20), "Publish"))
+                {
 
-                GUI.Window(0, new Rect(5, 30, 200, Screen.height - 35), objectWindow, "Object");
-                GUI.Window(1, new Rect(Screen.width - 205, 30, 200, Screen.height - 35), propertiesWindow, "Properties");
+                }
             }
             else
             {
-                if (GUI.Button(new Rect(5, 5, 50, 20), "Show"))
+                if (GUI.Button(new Rect(Screen.width - 105, 5, 100, 20), "Save"))
                 {
-                    showObjectMenu = true;
+
+                    isSaved = true;
                 }
             }
 
-            if (GUI.Button(new Rect(60, 5, 80, 20), "Grid: " + isGrid.ToString()))
+            if (GUI.Button(new Rect(Screen.width - 210, 5, 100, 20), "Settings"))
             {
-                isGrid = !isGrid;
+                showSettings = !showSettings;
             }
+
+            //=======TopLeft=======
+
+            GUI.Window(0, new Rect(5, 30, 200, Screen.height - 35), objectWindow, "Object");
+            GUI.Window(1, new Rect(Screen.width - 205, 30, 200, Screen.height - 35), propertiesWindow, "Properties");
+            if (GUI.Button(new Rect(60, 5, 80, 20), "Grid: " + isGrid.ToString()))
+                isGrid = !isGrid;
 
             isBackground = GUI.Toggle(new Rect(145, 5, 100, 20), isBackground, "Background");
+        }
 
-            if (Time.timeScale == 0)
-            {
-                if (!isBackground)
-                    RenderSettings.skybox = null;
-                else
-                    RenderSettings.skybox = backgrounds[selectedBackground];
-
-                if (GUI.Button(new Rect(250, 5, 100, 20), "Play"))
-                {
-                    GetComponent<Camera>().enabled = false;
-                    GetComponent<AudioListener>().enabled = false;
-
-                    foreach (GameObject g in objectsSpawned)
-                    {
-                        MonoBehaviour[] behaviours = g.GetComponents<MonoBehaviour>();
-                        foreach (MonoBehaviour m in behaviours)
-                            m.enabled = true;
-                    }
-                    editorData = SaveLevel();
-                    Time.timeScale = 1;
-                }
-            }
+        if (Time.timeScale == 0)
+        {
+            if (!isBackground)
+                RenderSettings.skybox = null;
             else
-            {
                 RenderSettings.skybox = backgrounds[selectedBackground];
-                if (GUI.Button(new Rect(250, 5, 100, 20), "Stop"))
-                {
-                    GetComponent<Camera>().enabled = true;
-                    GetComponent<AudioListener>().enabled = true;
 
-                    Object[] objects = GameObject.FindObjectsOfType(typeof(GameObject));
-                    foreach(Object o in objects)
-                    {
-                        if ((GameObject)o != gameObject && (GameObject)o != Light)
-                            Destroy((GameObject)o);
-                    }
-                    Time.timeScale = 0;
-                    loadLevel(editorData);
-                }
-            }
-
-            //=======TopRight=======
-
-            if (GUI.Button(new Rect(Screen.width - 105, 5, 100, 20), "Edit Code"))
+            if (GUI.Button(new Rect(5, 5, 50, 20), "Play"))
             {
+                showObjectMenu = false;
+                GetComponent<Camera>().enabled = false;
+                GetComponent<AudioListener>().enabled = false;
+
+                foreach (GameObject g in objectsSpawned)
+                {
+                    MonoBehaviour[] behaviours = g.GetComponents<MonoBehaviour>();
+                    foreach (MonoBehaviour m in behaviours)
+                        m.enabled = true;
+                }
                 editorData = SaveLevel();
-                gettingCode = true;
+                Time.timeScale = 1;
             }
         }
         else
         {
-            editorData = GUI.TextArea(new Rect(5, 5, Screen.width - 10, Screen.height - 30), editorData);
-            if (GUI.Button(new Rect(Screen.width - 55, Screen.height - 25, 50, 20), "Close"))
+            RenderSettings.skybox = backgrounds[selectedBackground];
+            if (GUI.Button(new Rect(5, 5, 50, 20), "Stop"))
             {
+                showObjectMenu = true;
+                GetComponent<Camera>().enabled = true;
+                GetComponent<AudioListener>().enabled = true;
+
+                Object[] objects = GameObject.FindObjectsOfType(typeof(GameObject));
+                foreach (Object o in objects)
+                {
+                    if ((GameObject)o != gameObject && (GameObject)o != Light)
+                        Destroy((GameObject)o);
+                }
+                Time.timeScale = 0;
                 loadLevel(editorData);
-                gettingCode = false;
             }
         }
     }
@@ -326,6 +317,7 @@ public class LevelEditor : MonoBehaviour
 
                     objectsSpawned.Add(spwn);
                 }
+                isSaved = false;
             }
         }
         GUILayout.EndScrollView();
@@ -333,7 +325,39 @@ public class LevelEditor : MonoBehaviour
 
     private void propertiesWindow(int id)
     {
-        if (selected != null)
+        if (showSettings)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Car Type:", GUILayout.Width(75));
+            GUILayout.BeginVertical();
+            if (chosingBackground)
+            {
+                for (int x = 0; x < backgrounds.Length; x++)
+                {
+                    if (GUILayout.Button(backgrounds[x].name))
+                    {
+                        selectedBackground = x;
+                        Settings.carType = (Settings.CarType)selectedBackground;
+                        foreach (GameObject o in objectsSpawned)
+                        {
+                            if (o.GetComponent<blockMaterial>())
+                                o.GetComponent<blockMaterial>().UpdateTexture();
+                        }
+                        chosingBackground = false;
+                    }
+                }
+            }
+            else
+            {
+                if (GUILayout.Button(backgrounds[selectedBackground].name))
+                {
+                    chosingBackground = true;
+                }
+            }
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+        }
+        else if (selected != null)
         {
             DisplayProperties(selected);
         }
@@ -378,16 +402,6 @@ public class LevelEditor : MonoBehaviour
 
         GUILayout.EndHorizontal();
 
-        if (obj.GetComponent<blockMaterial>())
-        {
-            obj.GetComponent<blockMaterial>().selected = blockDropDown.Draw(100);
-            obj.GetComponent<blockMaterial>().UpdateTexture();
-        }
-        else if (obj.GetComponent<spawner>())
-        {
-            obj.GetComponent<spawner>().carType = (Settings.CarType)carLists.Draw(100);
-        }
-
         GUILayout.Space(50);
 
         if (GUILayout.Button("Apply", GUILayout.Width(100)))
@@ -403,9 +417,14 @@ public class LevelEditor : MonoBehaviour
 
     private void saveProperties(GameObject obj)
     {
+        isSaved = false;
+
         obj.transform.localScale = new Vector3(float.Parse(scaleX), float.Parse(scaleY), obj.transform.localScale.z);
         obj.transform.position = stringToVector3("( " + propertiesPositionX + ", " + propertiesPositionY + ", " + propertiesPositionZ + " )");
         obj.transform.eulerAngles = new Vector3(0, 0, float.Parse(propertiesRotation));
+
+        if (obj.GetComponent<blockMaterial>())
+            obj.GetComponent<blockMaterial>().UpdateTexture();
     }
 
     #endregion
@@ -421,12 +440,6 @@ public class LevelEditor : MonoBehaviour
             levelData += "  position=" + objectsSpawned[x].transform.position + ";\n";
             levelData += "  rotation=" + objectsSpawned[x].transform.eulerAngles + ";\n";
             levelData += "  scale=" + objectsSpawned[x].transform.localScale + ";\n";
-
-            if (objectsSpawned[x].GetComponent<blockMaterial>())
-                levelData += "  material=" + objectsSpawned[x].GetComponent<blockMaterial>().selected + ";\n";
-            else if (objectsSpawned[x].GetComponent<spawner>())
-                levelData += "  carType=" + carLists.selectedItem + ";\n";
-
             levelData += " }\n";
         }
 
@@ -443,9 +456,11 @@ public class LevelEditor : MonoBehaviour
             Destroy(g);
 
         objectsSpawned.Clear();
+        
         MatchCollection objectsMatched = Regex.Matches(levelData, @"([a-zA-Z0-9\(\)\ ]+){\s*(\s*[a-zA-Z]+\s*=\s*[a-zA-Z0-9\(\.\,\ \)\-]+;\s*)+\s*}");
         foreach (Match o in objectsMatched)
         {
+            GameObject spwn;
             if (o.Groups[1].ToString() == "Settings")
             {
                 MatchCollection attributes = Regex.Matches(o.ToString(), @"([a-zA-Z]+)\s*=\s*([a-zA-Z0-9\(\.\,\ \)\-]+);");
@@ -465,8 +480,38 @@ public class LevelEditor : MonoBehaviour
                 }
                 continue;
             }
+            else if (o.Groups[1].ToString() == "Spawner (Static)")
+            {
+                spwn = (GameObject)Instantiate(spawner, Vector3.zero, Quaternion.identity);
+                spwn.name = spawner.name;
+                MonoBehaviour[] behaviours = spwn.GetComponents<MonoBehaviour>();
+                foreach (MonoBehaviour m in behaviours)
+                    m.enabled = false;
 
-            GameObject spwn;
+                objectsSpawned.Add(spwn);
+
+                MatchCollection attributes = Regex.Matches(o.ToString(), @"([a-zA-Z]+)\s*=\s*([a-zA-Z0-9\(\.\,\ \)\-]+);");
+                foreach (Match a in attributes)
+                {
+                    string name = a.Groups[1].ToString();
+                    string value = a.Groups[2].ToString();
+
+                    switch (name)
+                    {
+                        case "position":
+                            spwn.transform.position = stringToVector3(value);
+                            break;
+                        case "rotation":
+                            spwn.transform.eulerAngles = stringToVector3(value);
+                            break;
+                        case "scale":
+                            spwn.transform.localScale = stringToVector3(value);
+                            break;
+                    }
+                }
+                continue;
+            }
+
             for (int x = 0; x < objects.Length; x++)
             {
                 if (o.Groups[1].ToString() == objects[x].name)
@@ -476,9 +521,6 @@ public class LevelEditor : MonoBehaviour
                     MonoBehaviour[] behaviours = spwn.GetComponents<MonoBehaviour>();
                     foreach (MonoBehaviour m in behaviours)
                         m.enabled = false;
-
-                    if (spwn.GetComponent<blockMaterial>())
-                        spwn.GetComponent<Renderer>().material.mainTextureScale = new Vector2(spwn.transform.localScale.x, spwn.transform.localScale.y);
 
                     objectsSpawned.Add(spwn);
 
@@ -499,15 +541,10 @@ public class LevelEditor : MonoBehaviour
                             case "scale":
                                 spwn.transform.localScale = stringToVector3(value);
                                 break;
-                            case "material":
-                                spwn.GetComponent<blockMaterial>().selected = int.Parse(value);
-                                spwn.GetComponent<blockMaterial>().UpdateTexture();
-                                break;
-                            case "carType":
-                                spwn.GetComponent<spawner>().carType = (Settings.CarType)int.Parse(value);
-                                break;
                         }
                     }
+                    if (spwn.GetComponent<blockMaterial>())
+                        spwn.GetComponent<blockMaterial>().UpdateTexture();
                     break;
                 }
             }
