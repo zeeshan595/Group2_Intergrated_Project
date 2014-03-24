@@ -21,6 +21,7 @@ public class Car : MonoBehaviour
     public float jumpForce = 50; //Jump force when jump is pressed.
     public bool canReset = true; //Can the car be reset.
     public bool canJump = true; //Can the car Jump.
+    public GameObject timerObj;
 
     //GameObject with light component to represent forward lighting of the car.
     public GameObject forwardLight;
@@ -247,6 +248,29 @@ public class Car : MonoBehaviour
         rigidbody.AddForceAtPosition(Vector3.up * input.x * 500, -Vector3.right);
 
         #endregion
+    }
+
+    private void LateUpdate()
+    {
+        timerObj.GetComponent<TextMesh>().text = TimerToString(timer);
+    }
+
+    private string TimerToString(float seconds)
+    {
+        int min = 0;
+        while (seconds > 60)
+        {
+            seconds -= 60;
+            min++;
+        }
+
+        return min + ":" + Round(seconds, 2);
+    }
+
+    public static float Round(float value, int digits)
+    {
+        float mult = Mathf.Pow(10.0f, (float)digits);
+        return Mathf.Round(value * mult) / mult;
     }
 
     #region Health

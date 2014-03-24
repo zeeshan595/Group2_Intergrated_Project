@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 public class MySQL
 {
-    public static string regularExp = @"(\[([0-9]+)\] => (([\w\s\(\)\{\=\.\,\;\-\}]+)?[a-zA-Z0-9\}])[\s]+\[([a-zA-Z0-9]+)\] => (([\w\s\(\)\{\=\.\,\;\-\}]+)?[a-zA-Z0-9\}]))+";
+    public static string regularExp = @"(\[([0-9]+)\] => (([\w\s\(\)\{\=\.\,\;\-\}\!\@\$\%\^\&\*]+)?[a-zA-Z0-9\}\!\@\$\%\^\&\*])[\s]+\[([a-zA-Z0-9]+)\] => (([\w\s\(\)\{\=\.\,\;\-\}\!\@\$\%\^\&\*]+)?[a-zA-Z0-9\}\!\@\$\%\^\&\*]))+";
     public List<QueryData> data = new List<QueryData>();
 
     public MySQL(string data)
@@ -17,7 +17,6 @@ public class MySQL
         foreach (Match m in matches)
         {
             this.data.Add(new QueryData(m.Groups[5].ToString(), m.Groups[3].ToString()));
-            Debug.Log(m.Groups[5].ToString() + "=" + m.Groups[3].ToString());
         }
     }
 

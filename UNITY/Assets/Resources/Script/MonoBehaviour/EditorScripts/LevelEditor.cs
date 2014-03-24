@@ -9,6 +9,8 @@ public class LevelEditor : MonoBehaviour
 
     public static string editorData = "";
     public static int levelID = -1;
+    public static string levelName = "";
+    public static string levelDescription = "";
 
     public GUISkin skin;
     public GameObject Light;
@@ -16,8 +18,6 @@ public class LevelEditor : MonoBehaviour
     public Material[] backgrounds;
     public GameObject spawner;
 
-    private string levelName = "";
-    private string levelDescription = "";
     private bool saving = false;
     private bool publishing = false;
 
@@ -88,7 +88,7 @@ public class LevelEditor : MonoBehaviour
 
         blockMaterial = new DropDown(drop, 0);
 
-        if (levelID != -1)
+        if (levelID != -1 && editorData == "")
         {
             WWWForm form = new WWWForm();
             form.AddField("q", "SELECT * FROM `levels` WHERE `id` = '" + levelID + "' LIMIT 1");
@@ -195,7 +195,10 @@ public class LevelEditor : MonoBehaviour
                 propertiesRotation = selected.transform.eulerAngles.z.ToString();
 
                 scaleX = selected.transform.localScale.x.ToString();
-                scaleY = selected.transform.localScale.y.ToString();
+                if (!selected.GetComponent<editorObject>().yZSizeSwap)
+                    scaleY = selected.transform.localScale.y.ToString();
+                else
+                    scaleY = selected.transform.localScale.z.ToString();
 
                 MeshRenderer[] renderers = selected.GetComponentsInChildren<MeshRenderer>();
                 selectedColor = new Color[renderers.Length];
@@ -282,9 +285,10 @@ public class LevelEditor : MonoBehaviour
             }
 
             if (GUI.Button(new Rect(Screen.width - 210, 5, 100, 20), "Settings"))
-            {
                 showSettings = !showSettings;
-            }
+
+            if (GUI.Button(new Rect(Screen.width - 315, 5, 100, 20), "Back"))
+                Application.LoadLevel("menu");
 
             //=======TopLeft=======
 
@@ -421,6 +425,10 @@ public class LevelEditor : MonoBehaviour
                     foreach (MonoBehaviour m in behaviours)
                         m.enabled = false;
 
+                    behaviours = spwn.GetComponentsInChildren<MonoBehaviour>();
+                    foreach (MonoBehaviour m in behaviours)
+                        m.enabled = false;
+
                     if (spwn.GetComponent<blockMaterial>())
                         spwn.GetComponent<blockMaterial>().UpdateTexture();
 
@@ -480,36 +488,48 @@ public class LevelEditor : MonoBehaviour
     {
         GUILayout.Label("Name: " + obj.name);
 
-        GUILayout.Label("Position: ");
-        GUILayout.BeginHorizontal();
-
-        propertiesPositionX = GUILayout.TextField(propertiesPositionX, GUILayout.Width(90));
-        propertiesPositionY = GUILayout.TextField(propertiesPositionY, GUILayout.Width(90));
-
-        GUILayout.EndHorizontal();
-
-        GUILayout.Label("Z-Axies");
-
-        try
+        if (obj.GetComponent<editorObject>().position)
         {
-            propertiesPositionZ = GUILayout.HorizontalScrollbar(float.Parse(propertiesPositionZ), 0.1f, -0.3f, 0.3f).ToString();
+            GUILayout.Label("Position: ");
+            GUILayout.BeginHorizontal();
+
+            propertiesPositionX = GUILayout.TextField(propertiesPositionX, GUILayout.Width(90));
+            propertiesPositionY = GUILayout.TextField(propertiesPositionY, GUILayout.Width(90));
+
+            GUILayout.EndHorizontal();
         }
-        catch(System.Exception){        }
 
-        GUILayout.BeginHorizontal();
+        if (obj.GetComponent<editorObject>().zAxies)
+        {
+            GUILayout.Label("Z-Axies");
 
-        GUILayout.Label("Rotation: ", GUILayout.Width(52));
-        propertiesRotation = GUILayout.TextField(propertiesRotation);
+            try
+            {
+                propertiesPositionZ = GUILayout.HorizontalScrollbar(float.Parse(propertiesPositionZ), 0.1f, -0.3f, 0.3f).ToString();
+            }
+            catch (System.Exception) { propertiesPositionZ = "0"; }
+        }
 
-        GUILayout.EndHorizontal();
+        if (obj.GetComponent<editorObject>().rotation)
+        {
+            GUILayout.BeginHorizontal();
 
-        GUILayout.Label("Scale: ");
-        GUILayout.BeginHorizontal();
+            GUILayout.Label("Rotation: ", GUILayout.Width(52));
+            propertiesRotation = GUILayout.TextField(propertiesRotation);
 
-        scaleX = GUILayout.TextField(scaleX, GUILayout.Width(90));
-        scaleY = GUILayout.TextField(scaleY, GUILayout.Width(90));
+            GUILayout.EndHorizontal();
+        }
 
-        GUILayout.EndHorizontal();
+        if (obj.GetComponent<editorObject>().size)
+        {
+            GUILayout.Label("Scale: ");
+            GUILayout.BeginHorizontal();
+
+            scaleX = GUILayout.TextField(scaleX, GUILayout.Width(90));
+            scaleY = GUILayout.TextField(scaleY, GUILayout.Width(90));
+
+            GUILayout.EndHorizontal();
+        }
 
         if (obj.GetComponent<blockMaterial>())
         {
@@ -542,9 +562,19 @@ public class LevelEditor : MonoBehaviour
     {
         isSaved = false;
 
-        obj.transform.localScale = new Vector3(float.Parse(scaleX), float.Parse(scaleY), obj.transform.localScale.z);
-        obj.transform.position = stringToVector3("( " + propertiesPositionX + ", " + propertiesPositionY + ", " + propertiesPositionZ + " )");
-        obj.transform.eulerAngles = new Vector3(0, 180, float.Parse(propertiesRotation));
+        if (obj.GetComponent<editorObject>().size)
+        {
+            if (obj.GetComponent<editorObject>().yZSizeSwap)
+                obj.transform.localScale = new Vector3(float.Parse(scaleX), obj.transform.localScale.y, float.Parse(scaleY));
+            else
+                obj.transform.localScale = new Vector3(float.Parse(scaleX), float.Parse(scaleY), obj.transform.localScale.z);
+        }
+
+        if (obj.GetComponent<editorObject>().position)
+            obj.transform.position = stringToVector3("( " + propertiesPositionX + ", " + propertiesPositionY + ", " + propertiesPositionZ + " )");
+
+        if (obj.GetComponent<editorObject>().rotation)
+            obj.transform.eulerAngles = new Vector3(0, 180, float.Parse(propertiesRotation));
 
         if (obj.GetComponent<blockMaterial>())
             obj.GetComponent<blockMaterial>().UpdateTexture();

@@ -24,6 +24,6 @@ public class CameraFollow : MonoBehaviour
         if (!target)
             return;
 
-        transform.position = Vector3.Lerp(transform.position, target.transform.position + new Vector3(Mathf.Clamp(-target.transform.TransformDirection(target.rigidbody.velocity).z, -4, 4), height, -distance), Time.deltaTime * 2);
+        transform.position = Vector3.Lerp(transform.position, target.transform.position + new Vector3(Mathf.Clamp(-target.transform.TransformDirection(target.rigidbody.velocity).z, -10, 10), height, -distance), Time.deltaTime * 2);
     }
 }

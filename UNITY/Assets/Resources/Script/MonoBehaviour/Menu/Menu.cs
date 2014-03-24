@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Text.RegularExpressions;
 
 public class Menu : MonoBehaviour
 {
@@ -8,16 +7,10 @@ public class Menu : MonoBehaviour
     public Texture background;
 
     private Vector2 scrollView = Vector2.zero;
-    private MySQL levels;
 
     private void Start()
     {
-        WWWForm form = new WWWForm();
-        form.AddField("q", "SELECT * FROM `levels` WHERE `Author` = '" + Settings.Username + "'");
-
-        WWW w = new WWW("http://impossiblesix.net/InGame/returnQuery.php", form);
-
-        StartCoroutine(getAuthorLevels(w));
+        Time.timeScale = 1;
     }
 
     private void OnGUI()
@@ -29,6 +22,18 @@ public class Menu : MonoBehaviour
 
         GUI.Window(1, new Rect((Screen.width / 2) - 132, (Screen.height / 2) - 150, 264, 300), windowFunc, "");
 
+#if UNITY_WEBPLAYER
+        if (GUI.Button(new Rect(125, 5, 49, 51), "FB", skin.customStyles[0]))
+            Application.ExternalEval("window.open('https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl','_blank')");
+
+        if (GUI.Button(new Rect(125, 60, 49, 51), "T", skin.customStyles[0]))
+            Application.ExternalEval("window.open('https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl','_blank')");
+
+        if (GUI.Button(new Rect(125, 120, 49, 51), "W", skin.customStyles[0]))
+            Application.ExternalEval("window.open('http://impossiblesix.net','_blank')");
+
+
+#else
         if (GUI.Button(new Rect(125, 5, 49, 51), "FB", skin.customStyles[0]))
             System.Diagnostics.Process.Start("https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl");
 
@@ -37,6 +42,7 @@ public class Menu : MonoBehaviour
 
         if (GUI.Button(new Rect(125, 120, 49, 51), "W", skin.customStyles[0]))
             System.Diagnostics.Process.Start("http://impossiblesix.net");
+#endif
     }
 
     private void windowFunc(int id)
@@ -45,48 +51,22 @@ public class Menu : MonoBehaviour
 
         if (GUILayout.Button("Play"))
         {
-
-        }
-
-        if (GUILayout.Button("Comunity Levels"))
-        {
-            Application.LoadLevel("comunityLevels");
+            GetComponent<CharacterSelection>().enabled = true;
+            this.enabled = false;
         }
 
         if (GUILayout.Button("Create"))
         {
-            
+            GetComponent<Create>().enabled = true;
+            this.enabled = false;
         }
 
-        if (GUILayout.Button("Options"))
+        if (GUILayout.Button("Credits"))
         {
-
+            GetComponent<Credits>().enabled = true;
+            this.enabled = false;
         }
 
         GUILayout.EndScrollView();
-
-        /*
-        for (int x = 0; x < levels.data.Count; x++)
-        {
-            if (GUILayout.Button(levels.data[x].name))
-            {
-                //LevelEditor.levelID = levels.data
-            }
-        }
-        */
-    }
-
-    private IEnumerator getAuthorLevels(WWW w)
-    {
-        yield return w;
-        if (w.error == null)
-        {
-            MatchCollection matches = Regex.Matches(w.text, MySQL.regularExp);
-            
-        }
-        else
-        {
-            Debug.Log(w.error);
-        }
     }
 }

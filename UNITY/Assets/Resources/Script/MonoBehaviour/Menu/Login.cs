@@ -31,6 +31,28 @@ public class Login : MonoBehaviour
 
         if (capsLock)
             GUI.Box(new Rect(5, Screen.height - 55, 350, 24), "Password is case senstive, Caps lock is on.");
+
+#if UNITY_WEBPLAYER
+        if (GUI.Button(new Rect(125, 5, 49, 51), "FB", skin.customStyles[0]))
+            Application.ExternalEval("window.open('https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl','_blank')");
+
+        if (GUI.Button(new Rect(125, 60, 49, 51), "T", skin.customStyles[0]))
+            Application.ExternalEval("window.open('https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl','_blank')");
+
+        if (GUI.Button(new Rect(125, 120, 49, 51), "W", skin.customStyles[0]))
+            Application.ExternalEval("window.open('http://impossiblesix.net','_blank')");
+
+        
+#else
+        if (GUI.Button(new Rect(125, 5, 49, 51), "FB", skin.customStyles[0]))
+            System.Diagnostics.Process.Start("https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl");
+
+        if (GUI.Button(new Rect(125, 60, 49, 51), "T", skin.customStyles[0]))
+            System.Diagnostics.Process.Start("http://impossiblesix.net");
+
+        if (GUI.Button(new Rect(125, 120, 49, 51), "W", skin.customStyles[0]))
+            System.Diagnostics.Process.Start("http://impossiblesix.net");
+#endif
     }
 
     private void loginWindow(int id)
@@ -74,7 +96,7 @@ public class Login : MonoBehaviour
 
             GUILayout.EndHorizontal();
 
-            if (GUILayout.Button("Login", GUILayout.Height(50)))
+            if (GUILayout.Button("Login"))
             {
                 WWWForm form = new WWWForm();
                 form.AddField("user", username);
@@ -87,8 +109,8 @@ public class Login : MonoBehaviour
                 StartCoroutine(login(w));
             }
 
-            if (GUILayout.Button("Create an account", GUIStyle.none))
-                System.Diagnostics.Process.Start("http://impossiblesix.net/register");
+            //if (GUILayout.Button("Create an account", GUIStyle.none))
+            //    System.Diagnostics.Process.Start("http://impossiblesix.net/register");
         }
     }
 
@@ -100,7 +122,7 @@ public class Login : MonoBehaviour
         {
             if (w.text == "**LOGIN_SUCCESS**")
             {
-                Settings.Username = "";
+                Settings.Username = username;
                 message = "";
                 GetComponent<Menu>().enabled = true;
                 this.enabled = false;

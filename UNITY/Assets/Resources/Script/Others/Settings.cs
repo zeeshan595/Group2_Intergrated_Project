@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Settings
 {
-    public static string Username = "Zeeshan";
+    public static string Username = "";
 
     public enum CarType
     {
