@@ -7,11 +7,19 @@ public class LevelEditor : MonoBehaviour
 {
     #region Variables
 
+    public static string editorData = "";
+    public static int levelID = -1;
+
     public GUISkin skin;
     public GameObject Light;
     public GameObject[] objects;
     public Material[] backgrounds;
     public GameObject spawner;
+
+    private string levelName = "";
+    private string levelDescription = "";
+    private bool saving = false;
+    private bool publishing = false;
 
     private int selectedBackground = 0;
     private bool isBackground = false;
@@ -19,11 +27,11 @@ public class LevelEditor : MonoBehaviour
     private bool chosingBackground = false;
     private bool showSettings = false;
     private bool showObjectMenu = true;
+    private bool autoSnap = false;
     private List<GameObject> objectsSpawned = new List<GameObject>();
     private GameObject selected = null;
     private GameObject lastSelected = null;
     private bool isGrid = true;
-    private string editorData = "";
     private Color[] selectedColor;
     private Vector2 scrollView = Vector2.zero;
     private Vector3 offset = Vector3.zero;
@@ -37,6 +45,8 @@ public class LevelEditor : MonoBehaviour
     private string scaleY = "";
 
     private Material lineMaterial;
+
+    private DropDown blockMaterial;
 
     #endregion
 
@@ -67,8 +77,28 @@ public class LevelEditor : MonoBehaviour
             m.enabled = false;
 
         objectsSpawned.Add(spwn);
-    }
 
+        List<string> drop = new List<string>();
+        drop.Add("Action");
+        drop.Add("Cyberpunk");
+        drop.Add("Romance");
+        drop.Add("ScienceFiction");
+        drop.Add("Fantasy");
+        drop.Add("Adventure");
+
+        blockMaterial = new DropDown(drop, 0);
+
+        if (levelID != -1)
+        {
+            WWWForm form = new WWWForm();
+            form.AddField("q", "SELECT * FROM `levels` WHERE `id` = '" + levelID + "' LIMIT 1");
+
+            WWW w = new WWW("http://impossiblesix.net/InGame/returnQuery.php", form);
+
+            StartCoroutine(loadLevel(w));
+        }
+    }
+    
     private void OnPostRender()
     {
         if (!isGrid)
@@ -100,10 +130,10 @@ public class LevelEditor : MonoBehaviour
             GL.End();
         }
     }
-
+ 
     private void Update()
     {
-        if (Time.timeScale != 0)
+        if (Time.timeScale != 0 || saving || publishing)
             return;
 
         if (Input.GetKey(KeyCode.Mouse2) || Input.GetKey(KeyCode.Mouse1))
@@ -122,7 +152,15 @@ public class LevelEditor : MonoBehaviour
             Vector3 movment = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             movment.z = selected.transform.position.z;
 
-            if (Input.GetKey(KeyCode.LeftControl))
+            if (autoSnap && !Input.GetKey(KeyCode.LeftControl))
+            {
+                movment.x = Mathf.RoundToInt(movment.x);
+                movment.y = Mathf.RoundToInt(movment.y);
+
+                offset.x = Mathf.RoundToInt(offset.x);
+                offset.y = Mathf.RoundToInt(offset.y);
+            }
+            else if (!autoSnap && Input.GetKey(KeyCode.LeftControl))
             {
                 movment.x = Mathf.RoundToInt(movment.x);
                 movment.y = Mathf.RoundToInt(movment.y);
@@ -215,6 +253,16 @@ public class LevelEditor : MonoBehaviour
         if (skin != null)
             GUI.skin = skin;
 
+        if (saving || publishing)
+        {
+            if (saving)
+                GUI.Window(2, new Rect(Screen.width / 2 - 200, Screen.height / 2 - 200, 400, 400), savingWindow, "Save");
+            else
+                GUI.Window(3, new Rect(Screen.width / 2 - 200, Screen.height / 2 - 200, 400, 400), savingWindow, "Publish");
+
+            return;
+        }
+
         if (showObjectMenu)
         {
             //=======TopRight=======
@@ -229,8 +277,7 @@ public class LevelEditor : MonoBehaviour
             {
                 if (GUI.Button(new Rect(Screen.width - 105, 5, 100, 20), "Save"))
                 {
-
-                    isSaved = true;
+                    saving = true;
                 }
             }
 
@@ -247,6 +294,7 @@ public class LevelEditor : MonoBehaviour
                 isGrid = !isGrid;
 
             isBackground = GUI.Toggle(new Rect(145, 5, 100, 20), isBackground, "Background");
+            autoSnap = GUI.Toggle(new Rect(250, 5, 100, 20), autoSnap, "Auto Snap");
         }
 
         if (Time.timeScale == 0)
@@ -296,6 +344,67 @@ public class LevelEditor : MonoBehaviour
     #endregion
 
     #region windows
+
+    private void savingWindow(int id)
+    {
+        GUILayout.BeginHorizontal();
+
+        GUILayout.Label("Title: ", GUILayout.Width(50));
+        levelName = GUILayout.TextField(levelName);
+
+        GUILayout.EndHorizontal();
+
+        GUILayout.Label("Description: ", GUILayout.Width(200));
+        levelDescription = GUILayout.TextArea(levelDescription, 1000, GUILayout.Height(290));
+
+
+        GUILayout.BeginHorizontal();
+
+        if (GUILayout.Button("Cancel"))
+        {
+            saving = false;
+            publishing = false;
+        }
+
+        if (id == 2)
+        {
+            if (GUILayout.Button("Save"))
+            {
+                editorData = SaveLevel();
+                WWWForm form = new WWWForm();
+                form.AddField("Name", levelName);
+                form.AddField("Description", levelDescription);
+                form.AddField("Author", Settings.Username);
+                form.AddField("data", editorData);
+                form.AddField("id", levelID);
+                form.AddField("publish", '0');
+
+                WWW w = new WWW("http://impossiblesix.net/InGame/saveLevel", form);
+
+                StartCoroutine(saveLevel(w));
+            }
+        }
+        else
+        {
+            if (GUILayout.Button("Publish"))
+            {
+                editorData = SaveLevel();
+                WWWForm form = new WWWForm();
+                form.AddField("Name", levelName);
+                form.AddField("Description", levelDescription);
+                form.AddField("Author", Settings.Username);
+                form.AddField("data", editorData);
+                form.AddField("id", levelID);
+                form.AddField("publish", '1');
+
+                WWW w = new WWW("http://impossiblesix.net/InGame/saveLevel", form);
+
+                StartCoroutine(saveLevel(w));
+            }
+        }
+
+        GUILayout.EndHorizontal();
+    }
 
     private void objectWindow(int id)
     {
@@ -402,6 +511,20 @@ public class LevelEditor : MonoBehaviour
 
         GUILayout.EndHorizontal();
 
+        if (obj.GetComponent<blockMaterial>())
+        {
+            GUILayout.BeginHorizontal();
+
+            GUILayout.Label("Material: ", GUILayout.Width(75));
+
+            GUILayout.BeginVertical();
+            obj.GetComponent<blockMaterial>().selectedMaterial = blockMaterial.Draw();
+            obj.GetComponent<blockMaterial>().UpdateTexture();
+            GUILayout.EndVertical();
+
+            GUILayout.EndHorizontal();
+        }
+
         GUILayout.Space(50);
 
         if (GUILayout.Button("Apply", GUILayout.Width(100)))
@@ -421,10 +544,61 @@ public class LevelEditor : MonoBehaviour
 
         obj.transform.localScale = new Vector3(float.Parse(scaleX), float.Parse(scaleY), obj.transform.localScale.z);
         obj.transform.position = stringToVector3("( " + propertiesPositionX + ", " + propertiesPositionY + ", " + propertiesPositionZ + " )");
-        obj.transform.eulerAngles = new Vector3(0, 0, float.Parse(propertiesRotation));
+        obj.transform.eulerAngles = new Vector3(0, 180, float.Parse(propertiesRotation));
 
         if (obj.GetComponent<blockMaterial>())
             obj.GetComponent<blockMaterial>().UpdateTexture();
+    }
+
+    #endregion
+
+    #region MySQL Responces
+
+    public IEnumerator saveLevel(WWW w)
+    {
+        yield return w;
+        if (w.error == null)
+        {
+            if (w.text == "**ERROR**")
+                Debug.Log("Unknown error when saving the level.");
+            else
+            {
+                try
+                {
+                    levelID = int.Parse(w.text);
+                }
+                catch(System.Exception)
+                {
+                    Debug.Log("Unexpected server responce.");
+                }
+            }
+        }
+        else
+        {
+            Debug.Log(w.error);
+        }
+        saving = false;
+        publishing = false;
+    }
+
+    public IEnumerator loadLevel(WWW w)
+    {
+        yield return w;
+        if (w.error == null)
+        {
+            MySQL loaded = new MySQL(w.text);
+            editorData = loaded.data[loaded.Find("Level")].data;
+            loadLevel(editorData);
+            if (loaded.data[loaded.Find("Published")].data == "1")
+                isSaved = true;
+
+            levelName = loaded.data[loaded.Find("Name")].data;
+            levelDescription = loaded.data[loaded.Find("Description")].data;
+        }
+        else
+        {
+            Debug.Log(w.error);
+        }
     }
 
     #endregion
@@ -440,6 +614,12 @@ public class LevelEditor : MonoBehaviour
             levelData += "  position=" + objectsSpawned[x].transform.position + ";\n";
             levelData += "  rotation=" + objectsSpawned[x].transform.eulerAngles + ";\n";
             levelData += "  scale=" + objectsSpawned[x].transform.localScale + ";\n";
+
+            if (objectsSpawned[x].name == "Spawner (Static)")
+            {
+
+            }
+
             levelData += " }\n";
         }
 

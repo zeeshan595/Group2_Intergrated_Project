@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Settings
 {
+    public static string Username = "Zeeshan";
+
     public enum CarType
     {
         Action = 0,
