@@ -24,7 +24,7 @@ public class CameraFollow : MonoBehaviour
         if (!target)
             return;
 
-        float heightIncrease = target.transform.TransformDirection(Vector3.forward).y * 3;
+        float heightIncrease = target.transform.TransformDirection(Vector3.forward).y * -target.rigidbody.velocity.y * 0.75f;
 
         transform.position = Vector3.Lerp(transform.position, target.transform.position + new Vector3(-target.transform.TransformDirection(target.rigidbody.velocity).z * 0.75f, height + heightIncrease, -distance), Time.deltaTime * 2);
     }
