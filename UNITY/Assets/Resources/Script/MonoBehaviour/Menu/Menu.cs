@@ -4,6 +4,7 @@ using System.Collections;
 public class Menu : MonoBehaviour
 {
     public GUISkin skin;
+    public Texture menuWindow;
     public Texture background;
 
     private Vector2 scrollView = Vector2.zero;
@@ -18,16 +19,18 @@ public class Menu : MonoBehaviour
         GUI.skin = skin;
 
         if (background != null)
-            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), background);
+            GUI.DrawTexture(new Rect(120, 0, Screen.width - 230, Screen.height), background);
 
-        GUI.Window(1, new Rect((Screen.width / 2) - 132, (Screen.height / 2) - 150, 264, 300), windowFunc, "");
+        GUI.DrawTexture(new Rect((Screen.width / 2) - 290, (Screen.height / 2) - 297, 580, 595), menuWindow);
+
+        GUI.Window(1, new Rect((Screen.width / 2) - 132, (Screen.height / 2) + 25, 264, 250), windowFunc, "");
 
 #if UNITY_WEBPLAYER
         if (GUI.Button(new Rect(125, 5, 49, 51), "FB", skin.customStyles[0]))
             Application.ExternalEval("window.open('https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl','_blank')");
 
         if (GUI.Button(new Rect(125, 60, 49, 51), "T", skin.customStyles[0]))
-            Application.ExternalEval("window.open('https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl','_blank')");
+            Application.ExternalEval("window.open('https://twitter.com/impossible_6','_blank')");
 
         if (GUI.Button(new Rect(125, 120, 49, 51), "W", skin.customStyles[0]))
             Application.ExternalEval("window.open('http://impossiblesix.net','_blank')");
@@ -38,7 +41,7 @@ public class Menu : MonoBehaviour
             System.Diagnostics.Process.Start("https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl");
 
         if (GUI.Button(new Rect(125, 60, 49, 51), "T", skin.customStyles[0]))
-            System.Diagnostics.Process.Start("http://impossiblesix.net");
+            System.Diagnostics.Process.Start("https://twitter.com/impossible_6");
 
         if (GUI.Button(new Rect(125, 120, 49, 51), "W", skin.customStyles[0]))
             System.Diagnostics.Process.Start("http://impossiblesix.net");

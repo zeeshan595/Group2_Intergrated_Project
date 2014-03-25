@@ -319,6 +319,14 @@ public class LevelEditor : MonoBehaviour
                     MonoBehaviour[] behaviours = g.GetComponents<MonoBehaviour>();
                     foreach (MonoBehaviour m in behaviours)
                         m.enabled = true;
+
+                    if (g.name != "Finish (Static)")
+                    {
+                        behaviours = g.GetComponentsInChildren<MonoBehaviour>();
+                        foreach (MonoBehaviour m in behaviours)
+                            m.enabled = true;
+                    }
+
                 }
                 editorData = SaveLevel();
                 Time.timeScale = 1;

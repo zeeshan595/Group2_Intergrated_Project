@@ -66,7 +66,8 @@ public class Create : MonoBehaviour
 
         if (GUILayout.Button("Play"))
         {
-
+            loadLevel.levelData = levels[selectedLevel].data[levels[selectedLevel].Find("Level")].data;
+            Application.LoadLevel("game");
         }
 
         GUILayout.EndHorizontal();

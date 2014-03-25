@@ -12,7 +12,7 @@ public class Credits : MonoBehaviour
     {
         GUILayout.Label("Alex McCauley - Illustration, Concept Art");
         GUILayout.Label("Andrew Smith - Programmer");
-        GUILayout.Label("Beatrice - Animator, Artist");
+        GUILayout.Label("Beatrice Vaicekauskaite - Animator, Artist");
         GUILayout.Label("Kati Salminen - Artist");
         GUILayout.Label("Thomas Agnew - Computer Games (Design)");
         GUILayout.Label("Zeeshan Abid - Programmer");

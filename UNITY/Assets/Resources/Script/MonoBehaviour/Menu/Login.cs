@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Login : MonoBehaviour
 {
+    public Texture background;
+    public Texture menuWindow;
     public int effectWidth = 100;
     public GUISkin skin;
     public Texture blackBlock;
@@ -27,7 +29,12 @@ public class Login : MonoBehaviour
     {
         GUI.skin = skin;
 
-        GUI.Window(0, new Rect(Screen.width / 2 - 150, Screen.height / 2 - 100, 300, 180), loginWindow, "");
+        if (background != null)
+            GUI.DrawTexture(new Rect(120, 0, Screen.width - 230, Screen.height), background);
+
+        GUI.DrawTexture(new Rect((Screen.width / 2) - 290, (Screen.height / 2) - 297, 580, 595), menuWindow);
+
+        GUI.Window(0, new Rect(Screen.width / 2 - 150, Screen.height / 2 + 50, 300, 180), loginWindow, "");
 
         if (capsLock)
             GUI.Box(new Rect(5, Screen.height - 55, 350, 24), "Password is case senstive, Caps lock is on.");
@@ -37,7 +44,7 @@ public class Login : MonoBehaviour
             Application.ExternalEval("window.open('https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl','_blank')");
 
         if (GUI.Button(new Rect(125, 60, 49, 51), "T", skin.customStyles[0]))
-            Application.ExternalEval("window.open('https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl','_blank')");
+            Application.ExternalEval("window.open('https://twitter.com/impossible_6','_blank')");
 
         if (GUI.Button(new Rect(125, 120, 49, 51), "W", skin.customStyles[0]))
             Application.ExternalEval("window.open('http://impossiblesix.net','_blank')");
@@ -48,7 +55,7 @@ public class Login : MonoBehaviour
             System.Diagnostics.Process.Start("https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl");
 
         if (GUI.Button(new Rect(125, 60, 49, 51), "T", skin.customStyles[0]))
-            System.Diagnostics.Process.Start("http://impossiblesix.net");
+            System.Diagnostics.Process.Start("https://twitter.com/impossible_6");
 
         if (GUI.Button(new Rect(125, 120, 49, 51), "W", skin.customStyles[0]))
             System.Diagnostics.Process.Start("http://impossiblesix.net");
