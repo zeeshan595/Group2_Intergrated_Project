@@ -25,10 +25,10 @@ public class LevelLoader : MonoBehaviour
 
     private void loadLevel(string levelData)
     {
-        GameObject spwn;
         MatchCollection objectsMatched = Regex.Matches(levelData, @"([a-zA-Z0-9\(\)\ ]+){\s*(\s*[a-zA-Z]+\s*=\s*[a-zA-Z0-9\(\.\,\ \)\-]+;\s*)+\s*}");
         foreach (Match o in objectsMatched)
         {
+            GameObject spwn;
             if (o.Groups[1].ToString() == "Settings")
             {
                 MatchCollection attributes = Regex.Matches(o.ToString(), @"([a-zA-Z]+)\s*=\s*([a-zA-Z0-9\(\.\,\ \)\-]+);");
@@ -51,9 +51,6 @@ public class LevelLoader : MonoBehaviour
             {
                 spwn = (GameObject)Instantiate(spawner, Vector3.zero, Quaternion.identity);
                 spwn.name = spawner.name;
-                MonoBehaviour[] behaviours = spwn.GetComponents<MonoBehaviour>();
-                foreach (MonoBehaviour m in behaviours)
-                    m.enabled = false;
 
                 MatchCollection attributes = Regex.Matches(o.ToString(), @"([a-zA-Z]+)\s*=\s*([a-zA-Z0-9\(\.\,\ \)\-]+);");
                 foreach (Match a in attributes)
@@ -72,6 +69,9 @@ public class LevelLoader : MonoBehaviour
                         case "scale":
                             spwn.transform.localScale = stringToVector3(value);
                             break;
+                        case "car":
+                            Settings.carType = (Settings.CarType)int.Parse(value);
+                            break;
                     }
                 }
                 continue;
@@ -83,12 +83,6 @@ public class LevelLoader : MonoBehaviour
                 {
                     spwn = (GameObject)Instantiate(objects[x], new Vector3(transform.position.x, transform.position.y, objects[x].transform.position.z), objects[x].transform.rotation);
                     spwn.name = objects[x].name;
-                    MonoBehaviour[] behaviours = spwn.GetComponents<MonoBehaviour>();
-                    foreach (MonoBehaviour m in behaviours)
-                        m.enabled = false;
-
-                    if (spwn.GetComponent<blockMaterial>())
-                        spwn.GetComponent<Renderer>().material.mainTextureScale = new Vector2(spwn.transform.localScale.x, spwn.transform.localScale.y);
 
                     MatchCollection attributes = Regex.Matches(o.ToString(), @"([a-zA-Z]+)\s*=\s*([a-zA-Z0-9\(\.\,\ \)\-]+);");
                     foreach (Match a in attributes)
@@ -107,8 +101,14 @@ public class LevelLoader : MonoBehaviour
                             case "scale":
                                 spwn.transform.localScale = stringToVector3(value);
                                 break;
+                            case "blockType":
+                                if (spwn.GetComponent<blockMaterial>())
+                                    spwn.GetComponent<blockMaterial>().selectedMaterial = int.Parse(value);
+                                break;
                         }
                     }
+                    if (spwn.GetComponent<blockMaterial>())
+                        spwn.GetComponent<blockMaterial>().UpdateTexture();
                     break;
                 }
             }

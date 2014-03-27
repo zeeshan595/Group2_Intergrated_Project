@@ -18,6 +18,7 @@ public class Finish : MonoBehaviour
             isFinished = true;
             timeFinished = other.collider.transform.parent.GetComponent<Car>().timerObj.GetComponent<TextMesh>().text;
             Camera.main.gameObject.GetComponent<CameraFollow>().enabled = false;
+            GetComponent<BoxCollider>().enabled = false;
         }
     }
 

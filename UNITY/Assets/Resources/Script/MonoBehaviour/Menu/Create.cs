@@ -48,9 +48,9 @@ public class Create : MonoBehaviour
         if (GUILayout.Button("Edit"))
         {
             LevelEditor.levelID = int.Parse(levels[selectedLevel].data[levels[selectedLevel].Find("id")].data);
-            LevelEditor.editorData = levels[selectedLevel].data[levels[selectedLevel].Find("Level")].data;
-            LevelEditor.levelName = levels[selectedLevel].data[levels[selectedLevel].Find("Name")].data;
-            LevelEditor.levelDescription = levels[selectedLevel].data[levels[selectedLevel].Find("Description")].data;
+            LevelEditor.editorData = "";
+            LevelEditor.levelName = "";
+            LevelEditor.levelDescription = "";
             Application.LoadLevel("levelEditor");
         }
 
@@ -66,7 +66,7 @@ public class Create : MonoBehaviour
 
         if (GUILayout.Button("Play"))
         {
-            loadLevel.levelData = levels[selectedLevel].data[levels[selectedLevel].Find("Level")].data;
+            LevelLoader.levelData = levels[selectedLevel].data[levels[selectedLevel].Find("Level")].data;
             Application.LoadLevel("game");
         }
 

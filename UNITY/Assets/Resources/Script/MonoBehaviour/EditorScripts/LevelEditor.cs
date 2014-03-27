@@ -47,6 +47,7 @@ public class LevelEditor : MonoBehaviour
     private Material lineMaterial;
 
     private DropDown blockMaterial;
+    private DropDown carType;
 
     #endregion
 
@@ -87,6 +88,7 @@ public class LevelEditor : MonoBehaviour
         drop.Add("Adventure");
 
         blockMaterial = new DropDown(drop, 0);
+        carType = new DropDown(drop, 0);
 
         if (levelID != -1 && editorData == "")
         {
@@ -174,7 +176,7 @@ public class LevelEditor : MonoBehaviour
             propertiesPositionZ = selected.transform.position.z.ToString();
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0) && Input.mousePosition.x > 210 && Input.mousePosition.x <  Screen.width - 210)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -199,6 +201,15 @@ public class LevelEditor : MonoBehaviour
                     scaleY = selected.transform.localScale.y.ToString();
                 else
                     scaleY = selected.transform.localScale.z.ToString();
+
+                if (selected.GetComponent<blockMaterial>())
+                {
+                    blockMaterial.selectedItem = selected.GetComponent<blockMaterial>().selectedMaterial;
+                }
+                else if (selected.GetComponent<spawner>())
+                {
+                    carType.selectedItem = (int)Settings.carType;
+                }
 
                 MeshRenderer[] renderers = selected.GetComponentsInChildren<MeshRenderer>();
                 selectedColor = new Color[renderers.Length];
@@ -453,7 +464,7 @@ public class LevelEditor : MonoBehaviour
         if (showSettings)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Car Type:", GUILayout.Width(75));
+            GUILayout.Label("Background:", GUILayout.Width(75));
             GUILayout.BeginVertical();
             if (chosingBackground)
             {
@@ -462,7 +473,6 @@ public class LevelEditor : MonoBehaviour
                     if (GUILayout.Button(backgrounds[x].name))
                     {
                         selectedBackground = x;
-                        Settings.carType = (Settings.CarType)selectedBackground;
                         foreach (GameObject o in objectsSpawned)
                         {
                             if (o.GetComponent<blockMaterial>())
@@ -548,6 +558,18 @@ public class LevelEditor : MonoBehaviour
             GUILayout.BeginVertical();
             obj.GetComponent<blockMaterial>().selectedMaterial = blockMaterial.Draw();
             obj.GetComponent<blockMaterial>().UpdateTexture();
+            GUILayout.EndVertical();
+
+            GUILayout.EndHorizontal();
+        }
+        else if (obj.GetComponent<spawner>())
+        {
+            GUILayout.BeginHorizontal();
+
+            GUILayout.Label("Car Type: ", GUILayout.Width(75));
+
+            GUILayout.BeginVertical();
+            Settings.carType = (Settings.CarType)carType.Draw();
             GUILayout.EndVertical();
 
             GUILayout.EndHorizontal();
@@ -653,9 +675,13 @@ public class LevelEditor : MonoBehaviour
             levelData += "  rotation=" + objectsSpawned[x].transform.eulerAngles + ";\n";
             levelData += "  scale=" + objectsSpawned[x].transform.localScale + ";\n";
 
-            if (objectsSpawned[x].name == "Spawner (Static)")
+            if (objectsSpawned[x].GetComponent<spawner>())
             {
-
+                levelData += "  car=" + (int)Settings.carType + ";\n";
+            }
+            else if (objectsSpawned[x].GetComponent<blockMaterial>())
+            {
+                levelData += "  blockType=" + objectsSpawned[x].GetComponent<blockMaterial>().selectedMaterial + ";\n";
             }
 
             levelData += " }\n";
@@ -725,6 +751,9 @@ public class LevelEditor : MonoBehaviour
                         case "scale":
                             spwn.transform.localScale = stringToVector3(value);
                             break;
+                        case "car":
+                            Settings.carType = (Settings.CarType)int.Parse(value);
+                            break;
                     }
                 }
                 continue;
@@ -737,6 +766,10 @@ public class LevelEditor : MonoBehaviour
                     spwn = (GameObject)Instantiate(objects[x], new Vector3(transform.position.x, transform.position.y, objects[x].transform.position.z), objects[x].transform.rotation);
                     spwn.name = objects[x].name;
                     MonoBehaviour[] behaviours = spwn.GetComponents<MonoBehaviour>();
+                    foreach (MonoBehaviour m in behaviours)
+                        m.enabled = false;
+
+                    behaviours = spwn.GetComponentsInChildren<MonoBehaviour>();
                     foreach (MonoBehaviour m in behaviours)
                         m.enabled = false;
 
@@ -758,6 +791,10 @@ public class LevelEditor : MonoBehaviour
                                 break;
                             case "scale":
                                 spwn.transform.localScale = stringToVector3(value);
+                                break;
+                            case "blockType":
+                                if (spwn.GetComponent<blockMaterial>())
+                                    spwn.GetComponent<blockMaterial>().selectedMaterial = int.Parse(value);
                                 break;
                         }
                     }

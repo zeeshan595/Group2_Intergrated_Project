@@ -18,13 +18,13 @@ public class CameraFollow : MonoBehaviour
         distance = Mathf.Lerp(distance, Mathf.Clamp(Mathf.Log(target.rigidbody.velocity.magnitude) * 2.3f, 3, 15), Time.deltaTime * 3);
     }
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         // Early out if we don't have a target
         if (!target)
             return;
 
-        float heightIncrease = target.transform.TransformDirection(Vector3.forward).y * -target.rigidbody.velocity.y * 0.75f;
+        float heightIncrease = Mathf.Abs(target.transform.TransformDirection(Vector3.forward).y) * target.rigidbody.velocity.y * 0.75f;
 
         transform.position = Vector3.Lerp(transform.position, target.transform.position + new Vector3(-target.transform.TransformDirection(target.rigidbody.velocity).z * 0.75f, height + heightIncrease, -distance), Time.deltaTime * 2);
     }
