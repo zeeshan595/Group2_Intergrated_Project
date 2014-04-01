@@ -23,7 +23,7 @@ public class Settings
         new Button("Jump", KeyCode.Space)
     };
 
-    public static CarType carType = CarType.Cyberpunk; // Action car (default)
+    public static CarType carType = CarType.Action; // Action car (default)
 
     public static int GetAxies(KeyCode pos, KeyCode neg)
     {

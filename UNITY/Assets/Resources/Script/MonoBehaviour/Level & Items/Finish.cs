@@ -9,6 +9,8 @@ public class Finish : MonoBehaviour
     private void Start()
     {
         GetComponent<BoxCollider>().size = new Vector3(0.05f, 1, 1);
+        if (Application.loadedLevelName == "levelEditor")
+            this.enabled = false;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -16,7 +18,7 @@ public class Finish : MonoBehaviour
         if (other.tag == "Player")
         {
             isFinished = true;
-            timeFinished = other.collider.transform.parent.GetComponent<Car>().timerObj.GetComponent<TextMesh>().text;
+            timeFinished = TimerToString(other.collider.transform.parent.GetComponent<Car>().timer);
             Camera.main.gameObject.GetComponent<CameraFollow>().enabled = false;
             GetComponent<BoxCollider>().enabled = false;
         }
@@ -33,4 +35,26 @@ public class Finish : MonoBehaviour
             }
         }
     }
+
+    #region helpers
+
+    private string TimerToString(float seconds)
+    {
+        int min = 0;
+        while (seconds > 60)
+        {
+            seconds -= 60;
+            min++;
+        }
+
+        return min + ":" + Round(seconds, 2);
+    }
+
+    public static float Round(float value, int digits)
+    {
+        float mult = Mathf.Pow(10.0f, (float)digits);
+        return Mathf.Round(value * mult) / mult;
+    }
+
+    #endregion 
 }

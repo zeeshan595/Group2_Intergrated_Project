@@ -7,7 +7,6 @@ public class Car : MonoBehaviour
     #region Variables
 
     public Wheel[] wheels; //The Wheels of the Car.
-    public GameObject[] attachments; //Attachments attached to the car.
     public Vector3 centerOfMass = Vector3.zero; //Center of the mass in vector3.
     public int health = 3; //Health of the car.
     public Texture[] healthTexture;
@@ -21,7 +20,6 @@ public class Car : MonoBehaviour
     public float jumpForce = 50; //Jump force when jump is pressed.
     public bool canReset = true; //Can the car be reset.
     public bool canJump = true; //Can the car Jump.
-    public GameObject timerObj;
 
     //GameObject with light component to represent forward lighting of the car.
     public GameObject forwardLight;
@@ -31,8 +29,8 @@ public class Car : MonoBehaviour
     //When Passed a checkpoint this will update
     [System.NonSerialized]
     public Vector3 resetPosition;
-
-    private float timer = 0;
+    [System.NonSerialized]
+    public float timer = 0;
 
     #endregion
 
@@ -76,7 +74,7 @@ public class Car : MonoBehaviour
 
         #region Car Reset
 
-        if (Input.GetKeyDown(Settings.buttons[4].key) && canReset)
+        if ((Input.GetKeyDown(Settings.buttons[4].key) || Input.GetKeyDown(KeyCode.Joystick1Button1)) && canReset)
         {
             transform.position = resetPosition;
             transform.rotation = Quaternion.Euler(0, 90, 0);
@@ -86,31 +84,25 @@ public class Car : MonoBehaviour
 
         #region Car Jump
 
-        if ((Input.GetKeyDown(Settings.buttons[5].key) || (Input.touchCount > 1 && (Input.touches[Input.touchCount - 1].phase == TouchPhase.Began || Input.touches[0].phase == TouchPhase.Began))) && canJump)
+        if ((Input.GetKeyDown(Settings.buttons[5].key) || Input.GetKeyDown(KeyCode.Joystick1Button0) || (Input.touchCount > 1 && (Input.touches[Input.touchCount - 1].phase == TouchPhase.Began || Input.touches[0].phase == TouchPhase.Began))) && canJump)
         {
-            rigidbody.AddForce(transform.up * jumpForce * 5000);
+            if (Settings.carType == Settings.CarType.ScienceFiction)
+                rigidbody.AddForce(new Vector3(0.5f, 1, 0) * jumpForce * 5000);
+            else
+                rigidbody.AddForce(transform.up * jumpForce * 5000);
         }
         canJump = false;
 
         #endregion
 
         #region Get Input
+
         Vector2 input = Vector2.zero;
 
-#if UNITY_ANDROID
-        input.x = Input.acceleration.x * 3;
-
-        foreach (Touch touch in Input.touches)
-        {
-            if (touch.position.x < Screen.width / 2)
-                input.y = -1;
-            else
-                input.y = 1;
-        }
-#else
-        //3 * -(((Screen.width / 2) - Input.mousePosition.x) / (Screen.width / 2))
         input = new Vector2(Settings.GetAxies(Settings.buttons[2].key, Settings.buttons[3].key), Settings.GetAxies(Settings.buttons[0].key, Settings.buttons[1].key));
-#endif
+        if (input == Vector2.zero)
+            input += new Vector2(Input.GetAxis("Horizontal") * 2, Input.GetAxis("Vertical"));
+
         #endregion
 
         #region Lights
@@ -250,10 +242,12 @@ public class Car : MonoBehaviour
         #endregion
     }
 
-    private void LateUpdate()
+    private void OnGUI()
     {
-        timerObj.GetComponent<TextMesh>().text = TimerToString(timer);
+        GUILayout.Box(TimerToString(timer));
     }
+
+    #region helpers
 
     private string TimerToString(float seconds)
     {
@@ -273,47 +267,5 @@ public class Car : MonoBehaviour
         return Mathf.Round(value * mult) / mult;
     }
 
-    #region Health
-
-    public int rediuceHealth(int amount)
-    {
-        health -= amount;
-        return health;
-    }
-
-    public int increaseHealth(int amount)
-    {
-        health += amount;
-        return health;
-    }
-
-    #endregion
-
-#if UNITY_ANDROID
-    //RESET BUTTON FOR ANDROID
-
-    private void OnGUI()
-    {
-        if (GUI.Button(new Rect(5, 5, 100, 100), "Reset"))
-        {
-            transform.position = resetPosition;
-            transform.rotation = Quaternion.Euler(0, 90, 0);
-        }
-    }
-#else
-    private void OnGUI()
-    {
-        /*
-        //GUILayout.Box(timer.ToString());
-        if (health == 3)
-            GUI.DrawTexture(new Rect(5, Screen.height - 505, 500, 500), healthTexture[0]);
-        else if (health == 2)
-            GUI.DrawTexture(new Rect(5, Screen.height - 505, 500, 500), healthTexture[1]);
-        else if (health == 1)
-            GUI.DrawTexture(new Rect(5, Screen.height - 505, 500, 500), healthTexture[2]);
-        else
-            GUI.DrawTexture(new Rect(5, Screen.height - 505, 500, 500), healthTexture[3]);
-         */
-    }
-#endif
+    #endregion 
 }

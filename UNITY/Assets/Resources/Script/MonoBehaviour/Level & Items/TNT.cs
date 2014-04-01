@@ -15,7 +15,7 @@ public class TNT : MonoBehaviour
         StartCoroutine(Start());
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (Mathf.Abs(rigidbody.velocity.magnitude - previousMagnitude) > level)
         {
