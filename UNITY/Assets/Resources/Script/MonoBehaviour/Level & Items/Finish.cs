@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Finish : MonoBehaviour
 {
+    public string nextLevel = "";
     private string timeFinished = "";
     private bool isFinished = false;
 
@@ -29,7 +30,14 @@ public class Finish : MonoBehaviour
         if (isFinished)
         {
             GUI.Box(new Rect(Screen.width / 2 - 50, Screen.height / 2 - 100, 100, 50), timeFinished);
-            if (GUI.Button(new Rect(Screen.width / 2 - 50, Screen.height / 2 - 25, 100, 50), "Back"))
+            if (nextLevel != "")
+            {
+                if (GUI.Button(new Rect(Screen.width / 2 - 50, Screen.height / 2 - 25, 100, 50), "Continue"))
+                {
+                    Application.LoadLevel(nextLevel);
+                }
+            }
+            if (GUI.Button(new Rect(Screen.width / 2 - 50, Screen.height / 2 + 30, 100, 50), "Back"))
             {
                 Application.LoadLevel("menu");
             }

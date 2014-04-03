@@ -16,6 +16,7 @@ public class Credits : MonoBehaviour
         GUILayout.Label("Kati Salminen - Artist");
         GUILayout.Label("Thomas Agnew - Computer Games (Design)");
         GUILayout.Label("Zeeshan Abid - Programmer");
+        GUILayout.Label("Music by http://www.bensound.com/");
         if (GUILayout.Button("Back"))
         {
             GetComponent<Menu>().enabled = true;

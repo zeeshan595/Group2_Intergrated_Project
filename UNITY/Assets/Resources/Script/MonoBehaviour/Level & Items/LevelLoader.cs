@@ -47,7 +47,7 @@ public class LevelLoader : MonoBehaviour
                 }
                 continue;
             }
-            else if (o.Groups[1].ToString() == "Spawner (Static)")
+            else if (o.Groups[1].ToString() == "Spawner")
             {
                 spwn = (GameObject)Instantiate(spawner, Vector3.zero, Quaternion.identity);
                 spwn.name = spawner.name;

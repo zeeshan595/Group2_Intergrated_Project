@@ -142,9 +142,12 @@ public class LevelEditor : MonoBehaviour
             GL.End();
         }
     }
- 
+
+
     private void Update()
     {
+        audio.volume += 0.001f;
+
         if (Time.timeScale != 0 || saving || publishing || ((Input.mousePosition.x < 210 || Input.mousePosition.x > Screen.width - 320) && selected == null))
             return;
 
@@ -306,7 +309,7 @@ public class LevelEditor : MonoBehaviour
 
         //DELETE
 
-        if (Input.GetKeyDown(KeyCode.Delete) || Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Delete) || Input.GetKeyDown(KeyCode.Backspace))
         {
             updateUndo(lastSelected.name + " Deleted");
             if (lastSelected != null && lastSelected.tag != "Spawner")
