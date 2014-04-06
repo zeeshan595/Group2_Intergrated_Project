@@ -22,7 +22,9 @@ public class Car : MonoBehaviour
     public float antiRollForce = 50; //Anit roll bar force amount.
     public float jumpForce = 50; //Jump force when jump is pressed.
     public bool canReset = true; //Can the car be reset.
-    public bool canJump = true; //Can the car Jump.
+
+    //
+    public GameObject jumpEffect;
 
     //GameObject with light component to represent forward lighting of the car.
     public GameObject forwardLight;
@@ -97,19 +99,6 @@ public class Car : MonoBehaviour
             transform.position = resetPosition;
             transform.rotation = Quaternion.Euler(0, 90, 0);
         }
-
-        #endregion
-
-        #region Car Jump
-
-        if ((Input.GetKeyDown(Settings.buttons[5].key) || Input.GetKeyDown(KeyCode.Joystick1Button0) || (Input.touchCount > 1 && (Input.touches[Input.touchCount - 1].phase == TouchPhase.Began || Input.touches[0].phase == TouchPhase.Began))) && canJump)
-        {
-            if (Settings.carType == Settings.CarType.ScienceFiction)
-                rigidbody.AddForce(new Vector3(0.5f, 1, 0) * jumpForce * 5000);
-            else
-                rigidbody.AddForce(transform.up * jumpForce * 5000);
-        }
-        canJump = false;
 
         #endregion
 
@@ -194,9 +183,6 @@ public class Car : MonoBehaviour
                     wheels[x].wheelSpin += transform.InverseTransformDirection(rigidbody.velocity).z * Mathf.PI;
                 else
                     wheels[x].wheelSpin += transform.InverseTransformDirection(rigidbody.velocity).z * Mathf.PI;
-
-                if (!canJump)
-                    canJump = true;
 
                 isGrounded = true;
             }
@@ -286,6 +272,21 @@ public class Car : MonoBehaviour
         float enginePitch = ((currentSpeed - gearMinValue) / (gearMaxValue - gearMinValue));
         audio.volume = Mathf.Clamp(enginePitch, minVolume, maxVolume);
         audio.pitch = enginePitch + soundPitch;
+
+        #endregion
+
+        #region Car Jump
+
+        if ((Input.GetKeyDown(Settings.buttons[5].key) || Input.GetKeyDown(KeyCode.Joystick1Button0) || (Input.touchCount > 1 && (Input.touches[Input.touchCount - 1].phase == TouchPhase.Began || Input.touches[0].phase == TouchPhase.Began))) && isGrounded)
+        {
+            if (Settings.carType == Settings.CarType.ScienceFiction)
+                rigidbody.AddForce(new Vector3(0.5f, 1, 0) * jumpForce * 5000);
+            else
+                rigidbody.AddForce(transform.up * jumpForce * 5000);
+
+            if (jumpEffect != null)
+                Instantiate(jumpEffect, transform.position, Quaternion.identity);
+        }
 
         #endregion
     }

@@ -3,51 +3,48 @@ using System.Collections;
 
 public class CharacterSelection : MonoBehaviour
 {
+    public Texture2D action;
+    public Texture2D fantasy;
+    public Texture2D adventure;
+    public Texture2D scifi;
+    public Texture2D romance;
+    public Texture2D cyberpuk;
+
     private void OnGUI()
     {
-        GUI.Window(4, new Rect(Screen.width / 2 - 150, Screen.height / 2 - 100, 300, 200), windowFunc, "");
-    }
-
-    private void windowFunc(int id)
-    {
-        if (GUILayout.Button("back"))
-        {
-            GetComponent<Menu>().enabled = true;
-            this.enabled = false;
-        }
-        if (GUILayout.Button("Action"))
+        if (GUI.Button(new Rect(Screen.width / 2 - 138, Screen.height / 2 - 210, 128, 200), action, GUIStyle.none))
         {
             Settings.carType = Settings.CarType.Action;
             Application.LoadLevel("tutorial");
         }
 
-        if (GUILayout.Button("Cyberpunk"))
-        {
-            Settings.carType = Settings.CarType.Cyberpunk;
-            Application.LoadLevel("tutorial");
-        }
-
-        if (GUILayout.Button("Romance"))
-        {
-            Settings.carType = Settings.CarType.Romance;
-            Application.LoadLevel("tutorial");
-        }
-
-        if (GUILayout.Button("Science Fiction"))
-        {
-            Settings.carType = Settings.CarType.ScienceFiction;
-            Application.LoadLevel("tutorial");
-        }
-
-        if (GUILayout.Button("Fantasy"))
+        if (GUI.Button(new Rect(Screen.width / 2 - 138, Screen.height / 2, 128, 200), fantasy, GUIStyle.none))
         {
             Settings.carType = Settings.CarType.Fantasy;
             Application.LoadLevel("tutorial");
         }
 
-        if (GUILayout.Button("Adventure"))
+        if (GUI.Button(new Rect(Screen.width / 2 - 138, Screen.height / 2 + 210, 128, 200), adventure, GUIStyle.none))
         {
             Settings.carType = Settings.CarType.Adventure;
+            Application.LoadLevel("tutorial");
+        }
+
+        if (GUI.Button(new Rect(Screen.width / 2, Screen.height / 2 - 210, 128, 200), scifi, GUIStyle.none))
+        {
+            Settings.carType = Settings.CarType.ScienceFiction;
+            Application.LoadLevel("tutorial");
+        }
+
+        if (GUI.Button(new Rect(Screen.width / 2, Screen.height / 2, 128, 200), romance, GUIStyle.none))
+        {
+            Settings.carType = Settings.CarType.Romance;
+            Application.LoadLevel("tutorial");
+        }
+
+        if (GUI.Button(new Rect(Screen.width / 2, Screen.height / 2 + 210, 128, 200), cyberpuk, GUIStyle.none))
+        {
+            Settings.carType = Settings.CarType.Cyberpunk;
             Application.LoadLevel("tutorial");
         }
     }
