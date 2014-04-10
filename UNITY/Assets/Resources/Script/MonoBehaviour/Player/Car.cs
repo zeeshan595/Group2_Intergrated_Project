@@ -78,6 +78,20 @@ public class Car : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, 90, 0);
     }
 
+    public void resetCar()
+    {
+        rigidbody.angularVelocity = Vector3.zero;
+        rigidbody.velocity = Vector3.zero;
+        transform.position = resetPosition;
+        transform.rotation = Quaternion.Euler(0, 90, 0);
+        Object[] gameObjects = GameObject.FindObjectsOfType(typeof(GameObject));
+        foreach (Object g in gameObjects)
+        {
+            if (((GameObject)g).GetComponent<editorObject>() && ((GameObject)g).GetComponent<editorObject>().backOnReset)
+                ((GameObject)g).transform.position = ((GameObject)g).GetComponent<editorObject>().originalPosition;
+        }
+    }
+
     //Every frame this method is executed.
     private void Update()
     {
@@ -94,10 +108,7 @@ public class Car : MonoBehaviour
 
         if ((Input.GetKeyDown(Settings.buttons[4].key) || Input.GetKeyDown(KeyCode.Joystick1Button1)) && canReset)
         {
-            rigidbody.angularVelocity = Vector3.zero;
-            rigidbody.velocity = Vector3.zero;
-            transform.position = resetPosition;
-            transform.rotation = Quaternion.Euler(0, 90, 0);
+            resetCar();
         }
 
         #endregion
@@ -253,6 +264,14 @@ public class Car : MonoBehaviour
 
         if (isGrounded)
             currentSpeed = Mathf.Abs(transform.TransformDirection(rigidbody.velocity).z);
+        else if (Mathf.Abs(input.y) > 0)
+        {
+            currentSpeed = topSpeed;
+        }
+        else
+        {
+            currentSpeed = 0;
+        }
 
         for (i = 0; i < gearRatioForSound.Length; i++)
         {
@@ -270,8 +289,8 @@ public class Car : MonoBehaviour
 
         gearMaxValue = gearRatioForSound[i];
         float enginePitch = ((currentSpeed - gearMinValue) / (gearMaxValue - gearMinValue));
-        audio.volume = Mathf.Clamp(enginePitch, minVolume, maxVolume);
-        audio.pitch = enginePitch + soundPitch;
+        audio.volume = Mathf.Lerp(audio.volume, Mathf.Clamp(enginePitch, minVolume, maxVolume), Time.deltaTime * 2);
+        audio.pitch = Mathf.Lerp(audio.pitch, enginePitch + soundPitch, Time.deltaTime * 5);
 
         #endregion
 

@@ -11,6 +11,8 @@ public class CameraFollow : MonoBehaviour
     // the height we want the camera to be above the target
     public float height = 5.0f;
 
+    public bool logMode = false;
+
     #endregion
 
     private void Update()
@@ -24,8 +26,17 @@ public class CameraFollow : MonoBehaviour
         if (!target)
             return;
 
-        float heightIncrease = Mathf.Abs(target.transform.TransformDirection(Vector3.forward).y) * target.rigidbody.velocity.y * 0.75f;
+        float heightIncrease;
 
-        transform.position = Vector3.Lerp(transform.position, target.transform.position + new Vector3(-target.transform.TransformDirection(target.rigidbody.velocity).z * 0.75f, height + heightIncrease, -distance), Time.deltaTime * 2);
+        if (!logMode)
+        {
+            heightIncrease = Mathf.Abs(target.transform.TransformDirection(Vector3.forward).y) * target.rigidbody.velocity.y * 0.75f;
+            transform.position = Vector3.Lerp(transform.position, target.transform.position + new Vector3(-target.transform.TransformDirection(target.rigidbody.velocity).z * 0.75f, height + heightIncrease, -distance), Time.deltaTime * 2);
+        }
+        else
+        {
+            heightIncrease = 0;
+            transform.position = Vector3.Lerp(transform.position, target.transform.position + new Vector3(0, height + heightIncrease, -distance), Time.deltaTime * 2);
+        }
     }
 }

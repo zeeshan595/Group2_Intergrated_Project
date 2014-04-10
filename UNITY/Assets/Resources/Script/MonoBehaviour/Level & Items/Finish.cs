@@ -19,7 +19,8 @@ public class Finish : MonoBehaviour
         if (other.tag == "Player")
         {
             isFinished = true;
-            timeFinished = TimerToString(other.collider.transform.parent.GetComponent<Car>().timer);
+            if (other.collider.transform.parent.GetComponent<Car>())
+                timeFinished = TimerToString(other.collider.transform.parent.GetComponent<Car>().timer);
             Camera.main.gameObject.GetComponent<CameraFollow>().enabled = false;
             GetComponent<BoxCollider>().enabled = false;
         }

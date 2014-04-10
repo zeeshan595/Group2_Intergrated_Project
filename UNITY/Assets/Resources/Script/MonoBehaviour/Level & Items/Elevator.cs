@@ -35,6 +35,9 @@ public class Elevator : MonoBehaviour
 
     private void Update()
     {
+        if (PauseMenu.isPaused)
+            return;
+
         if (playerOn)
         {
             transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, height, transform.position.z), (Time.deltaTime / Mathf.Abs(height - normalHeight)) * speed);

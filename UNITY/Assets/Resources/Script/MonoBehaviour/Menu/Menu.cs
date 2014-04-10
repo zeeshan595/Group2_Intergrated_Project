@@ -4,27 +4,22 @@ using System.Collections;
 public class Menu : MonoBehaviour
 {
     public GUISkin skin;
-    public Texture menuWindow;
-    public Texture background;
-
-    private Vector2 scrollView = Vector2.zero;
+    public GameObject[] menus;
 
     private void Start()
     {
         Time.timeScale = 1;
+        if (Settings.Username != "")
+        {
+            menus[0].SetActive(false);
+            menus[1].SetActive(true);
+        }
     }
 
     private void OnGUI()
     {
         GUI.skin = skin;
-
-        if (background != null)
-            GUI.DrawTexture(new Rect(120, 0, Screen.width - 230, Screen.height), background);
-
-        GUI.DrawTexture(new Rect((Screen.width / 2) - 290, (Screen.height / 2) - 297, 580, 595), menuWindow);
-
-        GUI.Window(1, new Rect((Screen.width / 2) - 132, (Screen.height / 2) + 25, 264, 250), windowFunc, "");
-
+        /*
 #if UNITY_WEBPLAYER
         if (GUI.Button(new Rect(125, 5, 49, 51), "FB", skin.customStyles[0]))
             Application.ExternalEval("window.open('https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl','_blank')");
@@ -46,30 +41,75 @@ public class Menu : MonoBehaviour
         if (GUI.Button(new Rect(125, 120, 49, 51), "W", skin.customStyles[0]))
             System.Diagnostics.Process.Start("http://impossiblesix.net");
 #endif
+         */
     }
 
-    private void windowFunc(int id)
+    public void buttonActive(int id)
     {
-        scrollView = GUILayout.BeginScrollView(scrollView);
-
-        if (GUILayout.Button("Play"))
+        switch(id)
         {
-            GetComponent<CharacterSelection>().enabled = true;
-            this.enabled = false;
-        }
+            case -1:
+                Application.LoadLevel("tutorial");
+                break;
+            case 0://Quit
+                Application.Quit();
+                break;
+            case 1://Play
+                menus[0].SetActive(false);
+                menus[1].SetActive(false);
+                menus[2].SetActive(true);
+                menus[3].SetActive(false);
+                break;
+            case 2://Comunity
 
-        if (GUILayout.Button("Create"))
+                break;
+            case 3://Create
+                //menus[1].SetActive(false);
+                //GetComponent<Create>().enabled = true;
+                break;
+            case 4://Credits
+
+                break;
+            case 5://Login
+                WWWForm form = new WWWForm();
+                form.AddField("user", menus[0].GetComponent<menuObjects>().objects[1].obj.GetComponent<menuTextField>().text);
+                form.AddField("pass", menus[0].GetComponent<menuObjects>().objects[2].obj.GetComponent<menuTextField>().text);
+
+                WWW w = new WWW("http://impossiblesix.net/inGame/login", form);
+                StartCoroutine(login(w));
+                break;
+            case 6://Character Chosen
+                menus[2].SetActive(false);
+                menus[3].SetActive(true);
+                break;
+            case 7://Back to main menu
+                menus[0].SetActive(false);
+                menus[1].SetActive(true);
+                menus[2].SetActive(false);
+                menus[3].SetActive(false);
+                break;
+        }
+    }
+
+    private IEnumerator login(WWW w)
+    {
+        yield return w;
+        if (w.error == null)
         {
-            GetComponent<Create>().enabled = true;
-            this.enabled = false;
+            if (w.text == "**LOGIN_SUCCESS**")
+            {
+                Settings.Username = menus[0].GetComponent<menuObjects>().objects[1].obj.GetComponent<menuTextField>().text;
+                menus[0].SetActive(false);
+                menus[1].SetActive(true);
+            }
+            else
+            {
+                menus[0].GetComponent<menuObjects>().objects[0].obj.GetComponent<TextMesh>().text = "Wrong user or pass";
+            }
         }
-
-        if (GUILayout.Button("Credits"))
+        else
         {
-            GetComponent<Credits>().enabled = true;
-            this.enabled = false;
+            menus[0].GetComponent<menuObjects>().objects[0].obj.GetComponent<TextMesh>().text = "Couldn't connect to the server.";
         }
-
-        GUILayout.EndScrollView();
     }
 }

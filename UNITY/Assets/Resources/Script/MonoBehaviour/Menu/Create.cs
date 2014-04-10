@@ -86,7 +86,7 @@ public class Create : MonoBehaviour
 
         if (GUILayout.Button("Back"))
         {
-            GetComponent<Menu>().enabled = true;
+            GetComponent<Menu>().buttonActive(8);
             this.enabled = false;
         }
 

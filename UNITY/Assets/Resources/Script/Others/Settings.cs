@@ -11,7 +11,8 @@ public class Settings
         Romance = 2,
         ScienceFiction = 3,
         Fantasy = 4,
-        Adventure = 5
+        Adventure = 5,
+        Log = 6
     }
 
     public static Button[] buttons = new Button[]{
@@ -23,7 +24,7 @@ public class Settings
         new Button("Jump", KeyCode.Space)
     };
 
-    public static CarType carType = CarType.Action; // Action car (default)
+    public static CarType carType = CarType.Log; // Action car (default)
 
     public static int GetAxies(KeyCode pos, KeyCode neg)
     {

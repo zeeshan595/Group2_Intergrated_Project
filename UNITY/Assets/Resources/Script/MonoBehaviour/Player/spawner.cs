@@ -9,7 +9,7 @@ public class spawner : MonoBehaviour
     public GameObject scienceFunction;
     public GameObject fantasy;
     public GameObject adventure;
-    public GameObject girlyGirl;
+    public GameObject log;
 
     private void Start()
     {
@@ -29,6 +29,9 @@ public class spawner : MonoBehaviour
                 break;
             case Settings.CarType.ScienceFiction:
                 Instantiate(scienceFunction, transform.position, Quaternion.identity);
+                break;
+            case Settings.CarType.Log:
+                Instantiate(log, transform.position, Quaternion.identity);
                 break;
             default: // Action car (default)
                 Instantiate(action, transform.position, Quaternion.identity);

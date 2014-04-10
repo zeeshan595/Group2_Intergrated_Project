@@ -57,11 +57,14 @@ public class Checkpoint : MonoBehaviour
             if (activate)
             {
                 glowLight.SetActive(true);
-                lantern.transform.eulerAngles = new Vector3(0, 0, Mathf.Sin(sinWave) * 5);
+                lantern.transform.eulerAngles = new Vector3(0, 0, Mathf.Sin(sinWave) * 10);
             }
         }
 
-        sinWave += Time.deltaTime;
+        if (!activate)
+            sinWave += Time.deltaTime;
+        else
+            sinWave += Time.deltaTime * 3;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -72,6 +75,8 @@ public class Checkpoint : MonoBehaviour
             sinWave = 0;
             if (other.transform.parent.GetComponent<Car>())
                 other.transform.parent.GetComponent<Car>().resetPosition = transform.position;
+            else if (other.GetComponent<TheLog>())
+                other.GetComponent<TheLog>().resetPosition = transform.position;
         }
     }
 }
