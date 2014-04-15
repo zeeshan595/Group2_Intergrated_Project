@@ -3,7 +3,6 @@ using System.Collections;
 
 public class Menu : MonoBehaviour
 {
-    public GUISkin skin;
     public GameObject[] menus;
 
     private void Start()
@@ -11,37 +10,12 @@ public class Menu : MonoBehaviour
         Time.timeScale = 1;
         if (Settings.Username != "")
         {
-            menus[0].SetActive(false);
-            menus[1].SetActive(true);
+            changeMenu(1);
         }
-    }
-
-    private void OnGUI()
-    {
-        GUI.skin = skin;
-        /*
-#if UNITY_WEBPLAYER
-        if (GUI.Button(new Rect(125, 5, 49, 51), "FB", skin.customStyles[0]))
-            Application.ExternalEval("window.open('https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl','_blank')");
-
-        if (GUI.Button(new Rect(125, 60, 49, 51), "T", skin.customStyles[0]))
-            Application.ExternalEval("window.open('https://twitter.com/impossible_6','_blank')");
-
-        if (GUI.Button(new Rect(125, 120, 49, 51), "W", skin.customStyles[0]))
-            Application.ExternalEval("window.open('http://impossiblesix.net','_blank')");
-
-
-#else
-        if (GUI.Button(new Rect(125, 5, 49, 51), "FB", skin.customStyles[0]))
-            System.Diagnostics.Process.Start("https://www.facebook.com/pages/Impossible-6/689811171069268?ref=hl");
-
-        if (GUI.Button(new Rect(125, 60, 49, 51), "T", skin.customStyles[0]))
-            System.Diagnostics.Process.Start("https://twitter.com/impossible_6");
-
-        if (GUI.Button(new Rect(125, 120, 49, 51), "W", skin.customStyles[0]))
-            System.Diagnostics.Process.Start("http://impossiblesix.net");
-#endif
-         */
+        else
+        {
+            changeMenu(0);
+        }
     }
 
     public void buttonActive(int id)
@@ -60,15 +34,19 @@ public class Menu : MonoBehaviour
                 menus[2].SetActive(true);
                 menus[3].SetActive(false);
                 break;
-            case 2://Comunity
-
+            case 2://Credits
+                menus[0].SetActive(false);
+                menus[1].SetActive(false);
+                menus[2].SetActive(false);
+                menus[3].SetActive(false);
+                menus[4].SetActive(true);
                 break;
             case 3://Create
-                //menus[1].SetActive(false);
-                //GetComponent<Create>().enabled = true;
+                menus[1].SetActive(false);
+                GetComponent<Create>().enabled = true;
                 break;
-            case 4://Credits
-
+            case 4://Comunity
+                
                 break;
             case 5://Login
                 WWWForm form = new WWWForm();
@@ -83,11 +61,29 @@ public class Menu : MonoBehaviour
                 menus[3].SetActive(true);
                 break;
             case 7://Back to main menu
-                menus[0].SetActive(false);
-                menus[1].SetActive(true);
-                menus[2].SetActive(false);
-                menus[3].SetActive(false);
+                changeMenu(1);
                 break;
+            case 8://go to options
+                changeMenu(5);
+                break;
+            case 9://Register Button
+#if UNITY_WEBPLAYER
+                Application.ExternalEval("window.open('http://impossiblesix.net/register','_blank')");
+#else
+                System.Diagnostics.Process.Start("http://impossiblesix.net/register");
+#endif
+                break;
+        }
+    }
+
+    private void changeMenu(int id)
+    {
+        for (int x = 0; x < menus.Length; x++)
+        {
+            if (x == id)
+                menus[x].SetActive(true);
+            else
+                menus[x].SetActive(false);
         }
     }
 

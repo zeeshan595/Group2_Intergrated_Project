@@ -16,20 +16,20 @@ public class Car : MonoBehaviour
     public float slowSteeringAngle = 30; //Maximum steering angle of the car.
     public float soundPitch = 1;
     public int numberOfGears = 3;
-    public float minVolume = 0.1f;
-    public float maxVolume = 0.4f;
     public bool antiRollBars = false;
     public float antiRollForce = 50; //Anit roll bar force amount.
     public float jumpForce = 50; //Jump force when jump is pressed.
     public bool canReset = true; //Can the car be reset.
 
-    //
+    //jump effect for a car
     public GameObject jumpEffect;
 
     //GameObject with light component to represent forward lighting of the car.
     public GameObject forwardLight;
     //GameObject with light component to represent backward lighting of the car.
     public GameObject backwardLight;
+
+    public GUISkin skin;
 
     //When Passed a checkpoint this will update
     [System.NonSerialized]
@@ -141,7 +141,7 @@ public class Car : MonoBehaviour
 
         #region anti gravity Easter Egg
 
-        if (Input.GetKeyDown(KeyCode.G))
+        if (Input.GetKeyDown(KeyCode.G) || Input.GetKeyDown(KeyCode.Joystick1Button2))
         {
             rigidbody.useGravity = !rigidbody.useGravity;
         }
@@ -289,7 +289,7 @@ public class Car : MonoBehaviour
 
         gearMaxValue = gearRatioForSound[i];
         float enginePitch = ((currentSpeed - gearMinValue) / (gearMaxValue - gearMinValue));
-        audio.volume = Mathf.Lerp(audio.volume, Mathf.Clamp(enginePitch, minVolume, maxVolume), Time.deltaTime * 2);
+        audio.volume = Mathf.Lerp(audio.volume, Mathf.Clamp(enginePitch, Mathf.Clamp(Settings.FXVolume - 0.3f, 0, Settings.FXVolume), Settings.FXVolume), Time.deltaTime * 2);
         audio.pitch = Mathf.Lerp(audio.pitch, enginePitch + soundPitch, Time.deltaTime * 5);
 
         #endregion
@@ -312,7 +312,8 @@ public class Car : MonoBehaviour
 
     private void OnGUI()
     {
-        GUILayout.Box(TimerToString(timer));
+        GUI.skin = skin;
+        GUI.Box(new Rect(5, 5, 150, 50), TimerToString(timer));
     }
 
     #region helpers

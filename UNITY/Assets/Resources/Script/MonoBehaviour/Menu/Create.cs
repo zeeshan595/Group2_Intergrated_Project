@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 
 public class Create : MonoBehaviour
 {
+    public GUISkin skin;
+
     private List<MySQL> levels = new List<MySQL>();
     private int selectedLevel = -1;
 
@@ -22,6 +24,8 @@ public class Create : MonoBehaviour
 
     private void OnGUI()
     {
+        GUI.skin = skin;
+
         if (selectedLevel == -1)
             GUI.Window(3, new Rect(125, 5, Screen.width - 240, Screen.height - 10), windowFunc, "");
         else
@@ -86,12 +90,15 @@ public class Create : MonoBehaviour
 
         if (GUILayout.Button("Back"))
         {
-            GetComponent<Menu>().buttonActive(8);
+            GetComponent<Menu>().buttonActive(7);
             this.enabled = false;
         }
 
         if (GUILayout.Button("+ Create New"))
         {
+            LevelEditor.editorData = "";
+            LevelEditor.levelName = "";
+            LevelEditor.levelDescription = "";
             LevelEditor.levelID = -1;
             Application.LoadLevel("levelEditor");
         }

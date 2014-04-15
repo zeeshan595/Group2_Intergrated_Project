@@ -97,6 +97,7 @@ public class LevelEditor : MonoBehaviour
         drop.Add("Adventure");
 
         blockMaterial = new DropDown(drop, 0);
+        drop.Add("Log");
         carType = new DropDown(drop, 0);
 
         if (levelID != -1 && editorData == "")
@@ -441,7 +442,8 @@ public class LevelEditor : MonoBehaviour
             {
                 if (GUI.Button(new Rect(Screen.width - 105, 5, 100, 20), "Publish"))
                 {
-                    saving = true;
+                    saving = false;
+                    publishing = true;
                 }
             }
             else
@@ -449,6 +451,7 @@ public class LevelEditor : MonoBehaviour
                 if (GUI.Button(new Rect(Screen.width - 105, 5, 100, 20), "Save"))
                 {
                     saving = true;
+                    publishing = false;
                 }
             }
 
@@ -550,36 +553,42 @@ public class LevelEditor : MonoBehaviour
         {
             if (GUILayout.Button("Save"))
             {
-                editorData = SaveLevel();
-                WWWForm form = new WWWForm();
-                form.AddField("Name", levelName);
-                form.AddField("Description", levelDescription);
-                form.AddField("Author", Settings.Username);
-                form.AddField("data", editorData);
-                form.AddField("id", levelID);
-                form.AddField("publish", '0');
+                if (levelName != "" && levelDescription != "")
+                {
+                    editorData = SaveLevel();
+                    WWWForm form = new WWWForm();
+                    form.AddField("Name", levelName);
+                    form.AddField("Description", levelDescription);
+                    form.AddField("Author", Settings.Username);
+                    form.AddField("data", editorData);
+                    form.AddField("id", levelID);
+                    form.AddField("publish", '0');
 
-                WWW w = new WWW("http://impossiblesix.net/InGame/saveLevel", form);
+                    WWW w = new WWW("http://impossiblesix.net/InGame/saveLevel", form);
 
-                StartCoroutine(saveLevel(w));
+                    StartCoroutine(saveLevel(w));
+                }
             }
         }
         else
         {
             if (GUILayout.Button("Publish"))
             {
-                editorData = SaveLevel();
-                WWWForm form = new WWWForm();
-                form.AddField("Name", levelName);
-                form.AddField("Description", levelDescription);
-                form.AddField("Author", Settings.Username);
-                form.AddField("data", editorData);
-                form.AddField("id", levelID);
-                form.AddField("publish", '1');
+                if (levelName != "" && levelDescription != "")
+                {
+                    editorData = SaveLevel();
+                    WWWForm form = new WWWForm();
+                    form.AddField("Name", levelName);
+                    form.AddField("Description", levelDescription);
+                    form.AddField("Author", Settings.Username);
+                    form.AddField("data", editorData);
+                    form.AddField("id", levelID);
+                    form.AddField("publish", '1');
 
-                WWW w = new WWW("http://impossiblesix.net/InGame/saveLevel", form);
+                    WWW w = new WWW("http://impossiblesix.net/InGame/saveLevel", form);
 
-                StartCoroutine(saveLevel(w));
+                    StartCoroutine(saveLevel(w));
+                }
             }
         }
 

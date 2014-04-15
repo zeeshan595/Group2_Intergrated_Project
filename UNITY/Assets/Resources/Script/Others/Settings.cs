@@ -3,6 +3,8 @@ using UnityEngine;
 public class Settings
 {
     public static string Username = "";
+    public static float MusicVolume = 0.5f;
+    public static float FXVolume = 0.3f;
 
     public enum CarType
     {
@@ -24,7 +26,7 @@ public class Settings
         new Button("Jump", KeyCode.Space)
     };
 
-    public static CarType carType = CarType.Log; // Action car (default)
+    public static CarType carType = CarType.Action; // Action car (default)
 
     public static int GetAxies(KeyCode pos, KeyCode neg)
     {

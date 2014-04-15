@@ -8,13 +8,18 @@ public class Elevator : MonoBehaviour
 
     private bool playerOn = false;
     private float normalHeight = 0;
+    private int wheelsInside = 0;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
         {
-            StartCoroutine(changeStatus(0.3f, true));
-            other.transform.parent.gameObject.transform.parent = gameObject.transform;
+            wheelsInside++;
+            if (wheelsInside > 1)
+            {
+                StartCoroutine(changeStatus(0.3f, true));
+                other.transform.parent.gameObject.transform.parent = gameObject.transform;
+            }
         }
     }
 
@@ -22,8 +27,12 @@ public class Elevator : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            StartCoroutine(changeStatus(1, false));
-            other.transform.parent.gameObject.transform.parent = null;
+            wheelsInside--;
+            if (wheelsInside == 0 && playerOn)
+            {
+                StartCoroutine(changeStatus(1, false));
+                other.transform.parent.gameObject.transform.parent = null;
+            }
         }
     }
 

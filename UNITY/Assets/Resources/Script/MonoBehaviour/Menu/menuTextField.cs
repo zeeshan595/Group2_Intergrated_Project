@@ -14,6 +14,13 @@ public class menuTextField : MonoBehaviour
     [System.NonSerialized]
     public string text = "";
 
+    private Color normalColor;
+
+    private void Start()
+    {
+        normalColor = renderer.material.color;
+    }
+
     private void Update()
     {
         if (editingMode)
@@ -24,19 +31,16 @@ public class menuTextField : MonoBehaviour
             }
             else if (Input.GetKeyUp(KeyCode.Mouse0) || Input.GetKey(KeyCode.KeypadEnter) || Input.GetKey(KeyCode.Return))
             {
-                renderer.material.color = Color.white;
-                transform.GetChild(0).GetComponent<TextMesh>().color = Color.red;
+                renderer.material.color = normalColor;
                 mouseOver = false;
                 editingMode = false;
             }
             else if (Input.GetKeyDown(KeyCode.Tab) && nextObject != null)
             {
                 nextObject.GetComponent<menuTextField>().editingMode = true;
-                nextObject.renderer.material.color = Color.black;
-                nextObject.transform.GetChild(0).GetComponent<TextMesh>().color = Color.white;
+                nextObject.renderer.material.color = normalColor * 1.25f;
 
-                renderer.material.color = Color.white;
-                transform.GetChild(0).GetComponent<TextMesh>().color = Color.red;
+                renderer.material.color = normalColor;
                 mouseOver = false;
                 editingMode = false;
             }
@@ -64,8 +68,7 @@ public class menuTextField : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        renderer.material.color = Color.black;
-        transform.GetChild(0).GetComponent<TextMesh>().color = Color.white;
+        renderer.material.color = normalColor * 1.25f;
         mouseOver = true;
     }
 
@@ -73,8 +76,7 @@ public class menuTextField : MonoBehaviour
     {
         if (!editingMode)
         {
-            renderer.material.color = Color.white;
-            transform.GetChild(0).GetComponent<TextMesh>().color = Color.red;
+            renderer.material.color = normalColor;
             mouseOver = false;
         }
     }

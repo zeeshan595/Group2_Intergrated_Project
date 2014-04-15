@@ -42,11 +42,11 @@ public class pauseMenuButtons : MonoBehaviour
         GetComponent<TextMesh>().color = Color.red;
         mouseOver = false;
 
+        pauseMenu.GetComponent<PauseMenu>().changeState();
+
         if (type == PauseButtonType.quit)
             Application.LoadLevel("menu");
-        else if (type == PauseButtonType.normal)
-            pauseMenu.GetComponent<PauseMenu>().changeState();
-        else
+        else if (type == PauseButtonType.restart)
             Application.LoadLevel(Application.loadedLevel);
     }
 }

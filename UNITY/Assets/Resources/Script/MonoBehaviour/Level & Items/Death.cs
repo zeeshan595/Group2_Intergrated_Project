@@ -3,9 +3,11 @@ using System.Collections;
 
 public class Death : MonoBehaviour
 {
+    public bool destroyRender = true;
+
     private void Start()
     {
-        if (gameObject.renderer)
+        if (gameObject.renderer && destroyRender)
         {
             Destroy(gameObject.renderer);
         }
