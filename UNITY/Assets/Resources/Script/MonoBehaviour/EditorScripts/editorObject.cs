@@ -9,7 +9,6 @@ public class editorObject : MonoBehaviour
     public bool size = false;
     public bool yZSizeSwap = false;
     public bool ratioScale = true;
-    public bool backOnReset = false;
 
     public bool removeColliderOnStart = false;
     [System.NonSerialized]
@@ -20,5 +19,13 @@ public class editorObject : MonoBehaviour
         originalPosition = transform.position;
         if (removeColliderOnStart && GetComponent<BoxCollider>())
             Destroy(GetComponent<BoxCollider>());
+    }
+
+    public void resetCar()
+    {
+        if (GetComponent<HingeJoint>())
+            GetComponent<HingeJoint>().useSpring = true;
+        else
+            transform.position = originalPosition;
     }
 }

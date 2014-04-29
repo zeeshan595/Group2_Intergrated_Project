@@ -3,7 +3,6 @@ using System.Collections;
 
 public class Car : MonoBehaviour
 {
-
     #region Variables
 
     public Wheel[] wheels; //The Wheels of the Car.
@@ -84,11 +83,10 @@ public class Car : MonoBehaviour
         rigidbody.velocity = Vector3.zero;
         transform.position = resetPosition;
         transform.rotation = Quaternion.Euler(0, 90, 0);
-        Object[] gameObjects = GameObject.FindObjectsOfType(typeof(GameObject));
-        foreach (Object g in gameObjects)
+        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("ResetObject");
+        foreach (GameObject g in gameObjects)
         {
-            if (((GameObject)g).GetComponent<editorObject>() && ((GameObject)g).GetComponent<editorObject>().backOnReset)
-                ((GameObject)g).transform.position = ((GameObject)g).GetComponent<editorObject>().originalPosition;
+                g.SendMessage("resetCar", SendMessageOptions.DontRequireReceiver);
         }
     }
 

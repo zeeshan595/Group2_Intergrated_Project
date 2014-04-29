@@ -6,13 +6,15 @@ public class Checkpoint : MonoBehaviour
     public enum Type
     {
         totem = 0,
-        tree = 1
+        tree = 1,
+        cyberpunk = 2
     }
 
     public Type type;
     public Texture[] frames;
     public GameObject glowLight;
     public GameObject lantern;
+    public Texture replaceImage;
 
     private int currentFrame = 0;
     private bool reverse = false;
@@ -77,6 +79,12 @@ public class Checkpoint : MonoBehaviour
                 other.transform.parent.GetComponent<Car>().resetPosition = transform.position;
             else if (other.GetComponent<TheLog>())
                 other.GetComponent<TheLog>().resetPosition = transform.position;
+
+            if (type == Type.cyberpunk)
+            {
+                transform.parent.renderer.material.mainTexture = replaceImage;
+                glowLight.SetActive(true);
+            }
         }
     }
 }

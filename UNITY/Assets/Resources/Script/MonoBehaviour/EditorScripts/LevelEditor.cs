@@ -147,7 +147,7 @@ public class LevelEditor : MonoBehaviour
 
     private void Update()
     {
-        audio.volume += 0.001f;
+        audio.volume = Mathf.Clamp(audio.volume + 0.001f, 0, Settings.MusicVolume);
 
         if (Time.timeScale != 0 || saving || publishing || ((Input.mousePosition.x < 210 || Input.mousePosition.x > Screen.width - 320) && selected == null))
             return;

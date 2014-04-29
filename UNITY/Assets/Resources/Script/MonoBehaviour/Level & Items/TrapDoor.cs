@@ -5,6 +5,7 @@ public class TrapDoor : MonoBehaviour
 {
     public GameObject trap;
     public bool destroy = false;
+    public bool oposite = false;
 
     private void Start()
     {
@@ -16,7 +17,12 @@ public class TrapDoor : MonoBehaviour
         if (other.tag == "Player")
         {
             if (!destroy)
-                trap.GetComponent<HingeJoint>().useSpring = false;
+            {
+                if (oposite)
+                    trap.GetComponent<HingeJoint>().useSpring = true;
+                else
+                    trap.GetComponent<HingeJoint>().useSpring = false;
+            }
             else
                 Destroy(trap);
         }

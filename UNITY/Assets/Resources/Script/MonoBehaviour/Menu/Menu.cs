@@ -5,6 +5,8 @@ public class Menu : MonoBehaviour
 {
     public GameObject[] menus;
 
+    private bool isLoggingIn = false;
+
     private void Start()
     {
         Time.timeScale = 1;
@@ -29,36 +31,32 @@ public class Menu : MonoBehaviour
                 Application.Quit();
                 break;
             case 1://Play
-                menus[0].SetActive(false);
-                menus[1].SetActive(false);
-                menus[2].SetActive(true);
-                menus[3].SetActive(false);
+                changeMenu(2);
                 break;
             case 2://Credits
-                menus[0].SetActive(false);
-                menus[1].SetActive(false);
-                menus[2].SetActive(false);
-                menus[3].SetActive(false);
-                menus[4].SetActive(true);
+                changeMenu(4);
                 break;
             case 3://Create
                 menus[1].SetActive(false);
                 GetComponent<Create>().enabled = true;
                 break;
             case 4://Comunity
-                
+                menus[1].SetActive(false);
+                GetComponent<Comunity>().enabled = true;
                 break;
             case 5://Login
+                if (isLoggingIn)
+                    break;
                 WWWForm form = new WWWForm();
                 form.AddField("user", menus[0].GetComponent<menuObjects>().objects[1].obj.GetComponent<menuTextField>().text);
                 form.AddField("pass", menus[0].GetComponent<menuObjects>().objects[2].obj.GetComponent<menuTextField>().text);
 
                 WWW w = new WWW("http://impossiblesix.net/inGame/login", form);
                 StartCoroutine(login(w));
+                isLoggingIn = true;
                 break;
             case 6://Character Chosen
-                menus[2].SetActive(false);
-                menus[3].SetActive(true);
+                changeMenu(3);
                 break;
             case 7://Back to main menu
                 changeMenu(1);
@@ -72,6 +70,9 @@ public class Menu : MonoBehaviour
 #else
                 System.Diagnostics.Process.Start("http://impossiblesix.net/register");
 #endif
+                break;
+            case 10:
+                changeMenu(6);
                 break;
         }
     }
@@ -107,5 +108,6 @@ public class Menu : MonoBehaviour
         {
             menus[0].GetComponent<menuObjects>().objects[0].obj.GetComponent<TextMesh>().text = "Couldn't connect to the server.";
         }
+        isLoggingIn = false;
     }
 }
