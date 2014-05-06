@@ -1076,43 +1076,6 @@ public class LevelEditor : MonoBehaviour
 
 #region Helper Classes
 
-public class DropDown
-{
-    public bool isClicked = false;
-    public List<string> items = new List<string>();
-    public int selectedItem = 0;
-
-    public DropDown(List<string> items, int defaultItem)
-    {
-        this.items = items;
-        this.selectedItem = defaultItem;
-    }
-
-    public int Draw(LevelEditor e)
-    {
-        if (isClicked)
-        {
-            for (int x = 0; x < items.Count; x++)
-            {
-                if (GUILayout.Button(items[x]))
-                {
-                    e.updateUndo(items[x] + " selected");
-                    selectedItem = x;
-                    isClicked = false;
-                }
-            }
-        }
-        else
-        {
-            if (GUILayout.Button(items[selectedItem]))
-            {
-                isClicked = true;
-            }
-        }
-        return selectedItem;
-    }
-}
-
 public class History
 {
     public string title;

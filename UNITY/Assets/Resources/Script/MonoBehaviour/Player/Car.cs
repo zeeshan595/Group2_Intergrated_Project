@@ -16,6 +16,7 @@ public class Car : MonoBehaviour
     public float soundPitch = 1;
     public int numberOfGears = 3;
     public bool antiRollBars = false;
+    public bool enableTimer = true;
     public float antiRollForce = 50; //Anit roll bar force amount.
     public float jumpForce = 50; //Jump force when jump is pressed.
     public bool canReset = true; //Can the car be reset.
@@ -115,9 +116,9 @@ public class Car : MonoBehaviour
 
         Vector2 input = Vector2.zero;
 
-        input = new Vector2(Settings.GetAxies(Settings.buttons[2].key, Settings.buttons[3].key), Settings.GetAxies(Settings.buttons[0].key, Settings.buttons[1].key));
+        input = new Vector2(Settings.GetAxies(Settings.buttons[2].key, Settings.buttons[3].key) * (60 / torque), Settings.GetAxies(Settings.buttons[0].key, Settings.buttons[1].key));
         if (input == Vector2.zero)
-            input += new Vector2(Input.GetAxis("Horizontal") * 2, Input.GetAxis("Vertical"));
+            input += new Vector2(Input.GetAxis("Horizontal") * (60 / torque), Input.GetAxis("Vertical"));
 
         #endregion
 
@@ -311,7 +312,8 @@ public class Car : MonoBehaviour
     private void OnGUI()
     {
         GUI.skin = skin;
-        GUI.Box(new Rect(5, 5, 150, 50), TimerToString(timer));
+        if (enableTimer)
+            GUI.Box(new Rect(5, 5, 150, 50), TimerToString(timer));
     }
 
     #region helpers

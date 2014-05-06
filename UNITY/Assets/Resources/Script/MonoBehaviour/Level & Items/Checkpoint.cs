@@ -7,7 +7,8 @@ public class Checkpoint : MonoBehaviour
     {
         totem = 0,
         tree = 1,
-        cyberpunk = 2
+        cyberpunk = 2,
+        romance = 3
     }
 
     public Type type;
@@ -15,15 +16,17 @@ public class Checkpoint : MonoBehaviour
     public GameObject glowLight;
     public GameObject lantern;
     public Texture replaceImage;
+    public Texture[] BeginningAnimation;
 
     private int currentFrame = 0;
     private bool reverse = false;
     private bool activate = false;
     private float sinWave = 0;
+    private bool romanceCycleComplete = false;
 
     private void Start()
     {
-        if (type == Type.totem)
+        if (type == Type.totem || type == Type.romance)
             InvokeRepeating("UpdateFrame", 0.1f, 0.05f);
         else if (type == Type.tree)
         {
@@ -47,6 +50,25 @@ public class Checkpoint : MonoBehaviour
                 else
                     currentFrame--;
             }
+            else if (type == Type.romance)
+            {
+                if (!romanceCycleComplete)
+                {
+                    currentFrame++;
+                    if (BeginningAnimation.Length == currentFrame)
+                    {
+                        currentFrame = 0;
+                        romanceCycleComplete = true;
+                    }
+                }
+                else
+                {
+                    if ((frames.Length - 1) == currentFrame)
+                        currentFrame = 0;
+
+                    currentFrame++;
+                }
+            }
         }
     }
 
@@ -61,6 +83,13 @@ public class Checkpoint : MonoBehaviour
                 glowLight.SetActive(true);
                 lantern.transform.eulerAngles = new Vector3(0, 0, Mathf.Sin(sinWave) * 10);
             }
+        }
+        else if (type == Type.romance)
+        {
+            if (romanceCycleComplete)
+                transform.parent.renderer.material.mainTexture = frames[currentFrame];
+            else
+                transform.parent.renderer.material.mainTexture = BeginningAnimation[currentFrame];
         }
 
         if (!activate)
