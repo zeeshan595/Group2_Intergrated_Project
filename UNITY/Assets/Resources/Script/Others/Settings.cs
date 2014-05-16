@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Settings
 {
-    public static string Username = "";
+    public static string Username = "Zeeshan";
     public static float MusicVolume = 0.5f;
     public static float FXVolume = 0.3f;
 

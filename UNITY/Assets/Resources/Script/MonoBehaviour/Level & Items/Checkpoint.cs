@@ -8,7 +8,8 @@ public class Checkpoint : MonoBehaviour
         totem = 0,
         tree = 1,
         cyberpunk = 2,
-        romance = 3
+        romance = 3,
+        scifi = 4
     }
 
     public Type type;
@@ -17,6 +18,7 @@ public class Checkpoint : MonoBehaviour
     public GameObject lantern;
     public Texture replaceImage;
     public Texture[] BeginningAnimation;
+    public GameObject[] sparks;
 
     private int currentFrame = 0;
     private bool reverse = false;
@@ -27,11 +29,23 @@ public class Checkpoint : MonoBehaviour
     private void Start()
     {
         if (type == Type.totem || type == Type.romance)
-            InvokeRepeating("UpdateFrame", 0.1f, 0.05f);
+            InvokeRepeating("UpdateFrame", 0.1f, 0.1f);
         else if (type == Type.tree)
         {
             glowLight.SetActive(false);
         }
+        else if (type == Type.scifi)
+            StartCoroutine(lightFlicker());
+    }
+
+    private IEnumerator lightFlicker()
+    {
+        yield return new WaitForSeconds(Random.Range(0.05f, 1.0f));
+        
+        if (activate)
+            glowLight.SetActive(!glowLight.activeInHierarchy);
+        
+        StartCoroutine(lightFlicker());
     }
 
     private void UpdateFrame()
@@ -113,6 +127,13 @@ public class Checkpoint : MonoBehaviour
             {
                 transform.parent.renderer.material.mainTexture = replaceImage;
                 glowLight.SetActive(true);
+            }
+            else if (type == Type.scifi)
+            {
+                foreach (GameObject g in sparks)
+                {
+                    g.SetActive(true);
+                }
             }
         }
     }
