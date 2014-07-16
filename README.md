@@ -5,12 +5,6 @@ WEBSITE LOGIN
 User: admin
 Pass: group2
 
-FTP INFO
-========
-Server: 
-Username: 
-Password: 
-
 =================
 HOW TO USE GITHUB
 =================
